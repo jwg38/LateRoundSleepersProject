@@ -9,7 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-read.csv("https://projects.fivethirtyeight.com/nba-model/2020/latest_RAPTOR_by_team.csv")
+library(tidyverse)
+nba_players <- read.csv("https://projects.fivethirtyeight.com/nba-model/2020/latest_RAPTOR_by_player.csv")
 
 ```
 ## R Markdown
@@ -31,3 +32,48 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+###Section 1 - Introduction
+
+
+We are investigating what makes NBA players successful in various seasons. We
+are all NBA fans and looking into statistics about the NBA will allow us to 
+have a better understanding for the game and make us more informative fans. 
+Basketball statistics are fairly new and it will be interesting to discover if
+our perceived notions of certain players match the statistical data. We want
+to look at if defensive or offensive efficiency affects winning percentage the
+most.
+In particular, we want to test the following hypothesis
+
+Better defensive players have a better winning percentage in the playoffs and 
+regular season.
+
+Players who score the most do not have the highest winning percentage.
+
+Players who have the most offensive possessions win more games.
+
+Sources:
+https://fivethirtyeight.com/features/introducing-raptor-our-new-metric-for-the-modern-nba/
+
+
+###Section 2 - Data description
+
+
+We wish to explore the NBA-Raptor data set. Raptor is a player efficiency rating 
+system.This data set has tracked multiple team and player analysis over a six 
+year period. Each observation is an NBA player with variables about their 
+statistics. It has variables such as players points per game, team winning 
+percentage, average team possessions per game, and many more. The player data
+is stats from every NBA games since 2014. Raptor was made by Fivethirtyeight. 
+
+
+
+###Section 3 - Glimpse of data
+
+```{r section-3}
+glimpse(nba_players)
+```
+
+Place your data in a /data folder of the repo you create. Later on you will include the codebook in the README of the data folder.
+
+
