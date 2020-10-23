@@ -1,0 +1,126 @@
+---
+title: "Proposal"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+nba_players <- read.csv("https://projects.fivethirtyeight.com/nba-model/2020/latest_RAPTOR_by_player.csv")
+
+```
+## R Markdown
+
+
+###Section 1 - Introduction
+
+
+We are investigating what makes NBA players successful in various seasons. We
+are all NBA fans and looking into statistics about the NBA will allow us to 
+have a better understanding for the game and make us more informative fans. 
+Basketball statistics are fairly new and it will be interesting to discover if
+our perceived notions of certain players match the statistical data. We want
+to look at if defensive or offensive efficiency affects winning percentage the
+most.
+In particular, we want to test the following hypothesis
+
+Better defensive players have a better winning percentage in the playoffs and 
+regular season.
+
+Players who score the most do not have the highest winning percentage.
+
+Players who have the most offensive possessions win more games.
+
+Sources:
+https://fivethirtyeight.com/features/introducing-raptor-our-new-metric-for-the-modern-nba/
+
+
+###Section 2 - Data description
+
+
+We wish to explore the NBA-Raptor data set. Raptor is a player efficiency rating 
+system.This data set has tracked multiple team and player analysis over a six 
+year period. Each observation is an NBA player with variables about their 
+statistics. It has variables such as players points per game, team winning 
+percentage, average team possessions per game, and many more. The player data
+is stats from every NBA games since 2014. Raptor was made by Fivethirtyeight. 
+
+
+
+###Section 3 - Glimpse of data
+
+```{r section-3}
+glimpse(nba_players)
+```
+
+### Methodology
+
+### Results
+
+1. Testing if better defensive players have a better WAR in the 
+playoffs and regular season.
+
+$H_0$: Better defensive players have the same WAR in the regular
+season and playoffs as average or below average defenders.
+
+$H_1$: Better defensive players have the better WAR in the 
+regular season and playoffs than average or below average defenders.
+
+```{r win perc test}
+#filtering out players who didn't play
+nba_players <- nba_players %>% 
+  filter(war_reg_season != 0)
+playoff_players <- nba_players %>% 
+  filter(war_playoffs != 0)
+
+#checking mean WAR
+mean_war <- nba_players %>% 
+  summarise(mean_war = mean(war_reg_season))
+mean_war
+
+mean_war_po <- playoff_players %>% 
+  summarise(mean_war = mean(war_playoffs))
+mean_war_po
+
+ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
+  geom_point() + geom_hline(yintercept = 0, lwd = 1, col = "red", lty = 2) +
+  geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)
+
+
+
+
+#Trying a hypothesis test ? didnt really work out
+nba_players<- nba_players %>% 
+  mutate(war_reg_good = case_when(war_reg_season > mean_war ~ TRUE,
+                                  war_reg_season <= mean_war ~ FALSE))
+
+#t.test(nba_players$raptor_defense ~ nba_players$war_reg_good,
+#       data = nba_players,
+#       var.equal = FALSE,
+#       alternative = "greater",
+#       conf.level = 0.95)
+
+#linear model tests
+exp_war_reg <- lm(war_reg_season ~ raptor_defense + raptor_offense, 
+              data = nba_players)
+tidy(exp_war_reg)
+
+exp_war_po <- lm(war_playoffs ~ raptor_defense + raptor_offense, 
+              data = playoff_players)
+tidy(exp_war_po)
+```
+
+Expected regular season WAR = 1.70 + 0.142 * Defensive RAPTOR + 0.306 * 
+Offensive Raptor
+
+Expected playoff WAR = 0.470 + 0.104 * Defensive RAPTOR + 0.152 * Offensive 
+Raptor
+
+This means that offensive efficiency is actually more important to WAR (wins 
+above replacement) than defensive efficiency in both the regular season and 
+playoffs.
+
