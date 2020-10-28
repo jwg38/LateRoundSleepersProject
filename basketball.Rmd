@@ -80,8 +80,46 @@ nba_players <- nba_players %>%
                                 raptor_offense < 0 & raptor_defense > 0 ~ 
                                   "Defensive",
                                 raptor_offense < 0 & raptor_defense < 0 ~ 
-                                  "No-way"),
-         team_win_pc = case_when())
+                                  "No-way"))
+```
+
+
+
+```{r team win pc}
+nba_players <- nba_players %>%
+  mutate(team_win_pc = case_when(
+    team == "MIL" ~ .767,
+    team == "TOR" ~ .736,
+    team == "BOS" ~ .667,
+    team == "IND" ~ .616,
+    team == "MIA" ~ .603,
+    team == "PHI" ~ .589,
+    team == "BRK" ~ .486,
+    team == "ORL" ~ .452,
+    team == "WAS" ~ .347,
+    team == "CHA" ~ .354,
+    team == "CHI" ~ .338,
+    team == "NYK" ~ .318,
+    team == "DET" ~ .303,
+    team == "ATL" ~ .299,
+    team == "CLE" ~ .292,
+    team == "LAL" ~ .732,
+    team == "LAC" ~ .681,
+    team == "DEN" ~ .630,
+    team == "HOU" ~ .611,
+    team == "OKC" ~ .611,
+    team == "UTA" ~ .611,
+    team == "DAL" ~ .573,
+    team == "POR" ~ .473,
+    team == "MEM" ~ .466,
+    team == "PHO" ~ .466,
+    team == "SAS" ~ .451,
+    team == "SAC" ~ .431,
+    team == "NOP" ~ .417,
+    team == "MIN" ~ .297,
+    team == "GSW" ~ .231
+  ))
+           
 ```
 
 
