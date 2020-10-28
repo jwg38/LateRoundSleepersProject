@@ -4,14 +4,13 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
 ```{r}
 library(tidyverse)
-nba_players <- read.csv("https://projects.fivethirtyeight.com/nba-model/2020/latest_RAPTOR_by_player.csv")
-
+nba_players <- read.csv("https://projects.fivethirtyeight.com/nba-model/2020/latest_RAPTOR_by_team.csv")
 ```
 ## R Markdown
 
@@ -61,6 +60,31 @@ glimpse(nba_players)
 
 ### Results
 
+### Adding Variables
+```{r variables}
+nba_players <- nba_players %>% 
+  filter(war_reg_season != 0)
+  
+
+mean_war <- nba_players %>% 
+  summarise(mean_war = mean(war_reg_season))
+mean_war
+
+nba_players <- nba_players %>% 
+  mutate(war_reg_good = case_when(war_reg_season > mean_war ~ TRUE,
+                                  war_reg_season <= mean_war ~ FALSE),
+         player_type = case_when(raptor_offense > 0 & raptor_defense > 0 ~ 
+                                   "Two-way",
+                                raptor_offense > 0 & raptor_defense < 0 ~ 
+                                  "Offensive",
+                                raptor_offense < 0 & raptor_defense > 0 ~ 
+                                  "Defensive",
+                                raptor_offense < 0 & raptor_defense < 0 ~ 
+                                  "No-way"),
+         team_win_pc = case_when())
+```
+
+
 1. Testing if better defensive players have a better WAR in the 
 playoffs and regular season.
 
@@ -70,16 +94,13 @@ season and playoffs as average or below average defenders.
 $H_1$: Better defensive players have the better WAR in the 
 regular season and playoffs than average or below average defenders.
 
-```{r win perc test}
-#filtering out players who didn't play
+```{r war cor test}
 nba_players <- nba_players %>% 
-  filter(war_reg_season != 0)
-playoff_players <- nba_players %>% 
-  filter(war_playoffs != 0)
+  mutate(log_war_reg = log(war_reg_season)) 
 
 #checking mean WAR
 mean_war <- nba_players %>% 
-  summarise(mean_war = mean(war_reg_season))
+  summarise(mean_war = mean(log_war_reg))
 mean_war
 
 mean_war_po <- playoff_players %>% 
@@ -91,23 +112,36 @@ ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
   geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)
 
 
-
-
-#Trying a hypothesis test ? didnt really work out
-nba_players<- nba_players %>% 
-  mutate(war_reg_good = case_when(war_reg_season > mean_war ~ TRUE,
-                                  war_reg_season <= mean_war ~ FALSE))
-
-#t.test(nba_players$raptor_defense ~ nba_players$war_reg_good,
-#       data = nba_players,
-#       var.equal = FALSE,
-#       alternative = "greater",
-#       conf.level = 0.95)
-
 #linear model tests
-exp_war_reg <- lm(war_reg_season ~ raptor_defense + raptor_offense, 
+exp_war_reg <- lm(log_war_reg ~ raptor_defense + raptor_offense, 
               data = nba_players)
 tidy(exp_war_reg)
+
+#Conditions test
+
+
+aug_reg <- augment(exp_war_reg)
+aug_reg %>%
+  slice(1:3)
+
+ggplot(data = aug_reg, 
+       aes(x = 1:nrow(nba_players), 
+           y = .resid)) + 
+  geom_point() + 
+  labs(x = "Index", y = "Residual")
+
+ggplot(aug_reg, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
+  labs(x = "Predicted Price", y = "Residuals")
+
+ggplot(aug_reg, mapping = aes(x = .resid)) +
+  geom_histogram(bins = 15) + 
+  labs(x = "Residuals")
+
+ggplot(aug_reg, mapping = aes(sample = .resid)) +
+  stat_qq() + 
+  stat_qq_line()
 
 exp_war_po <- lm(war_playoffs ~ raptor_defense + raptor_offense, 
               data = playoff_players)
