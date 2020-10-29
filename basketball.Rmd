@@ -1,6 +1,7 @@
-HI
 ---
-title: "Proposal"
+title: "Final Project Draft"
+subtitle: "due Thursday, Oct 29 at 11:59p"
+author: "Late Round Sleepers: Alex Jackson, Evan Finley, Jack White, Aliya Kamran"
 output: pdf_document
 ---
 
@@ -8,25 +9,25 @@ output: pdf_document
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+## Environment and Libraries
 
-```{r}
+```{r environ}
 library(tidyverse)
 nba_players <- read.csv("https://projects.fivethirtyeight.com/nba-model/2020/latest_RAPTOR_by_team.csv")
 ```
-## R Markdown
 
-
-###Section 1 - Introduction
-
+### 1: Introduction
 
 We are investigating what makes NBA players successful in various seasons. We
 are all NBA fans and looking into statistics about the NBA will allow us to 
-have a better understanding for the game and make us more informative fans. 
+have a better understanding for the game and make us more informed. 
 Basketball statistics are fairly new and it will be interesting to discover if
-our perceived notions of certain players match the statistical data. We want
-to look at if defensive or offensive efficiency affects winning percentage the
+our perceived notions of certain players match the statistical data. 
+
+In particular, we want to test the following hypothesis and questions:
+
+If defensive or offensive efficiency affects winning percentage the
 most.
-In particular, we want to test the following hypothesis
 
 Better defensive players have a better winning percentage in the playoffs and 
 regular season.
@@ -39,7 +40,7 @@ Sources:
 https://fivethirtyeight.com/features/introducing-raptor-our-new-metric-for-the-modern-nba/
 
 
-###Section 2 - Data description
+### 2: Data description
 
 
 We wish to explore the NBA-Raptor data set. Raptor is a player efficiency rating 
@@ -50,26 +51,32 @@ percentage, average team possessions per game, and many more. The player data
 is stats from every NBA games since 2014. Raptor was made by Fivethirtyeight. 
 
 
+### 3: Glimpse of data
 
-###Section 3 - Glimpse of data
-
-```{r section-3}
+```{r glimpse}
 glimpse(nba_players)
 ```
 
-### Methodology
+### 4: Methodology
 
-### Results
+The methodology section should include the variables used to address your research question, as well as any useful visualizations or summary statistics. As well, you should introduce and justify the statistical method(s) that you believe will be useful in answering your research question.
 
-### Adding Variables
+
+### 5: Results
+
+Showcase how you arrived at answers to your question using any techniques we have learned in this class (and some beyond, if you’re feeling adventurous). Provide the main results from your analysis. The goal is not to do an exhaustive data analysis (i.e., do not calculate every statistic and procedure you have learned for every variable), but rather let me know that you are proficient at asking meaningful questions and answering them with results of data analysis, that you are proficient in using R, and that you are proficient at interpreting and presenting the results. Focus on methods that help you begin to answer your research questions.
+
+
+### 6: Adding Variables and Cleaning Data
+
 ```{r variables}
 nba_players <- nba_players %>% 
-  filter(war_reg_season != 0)
-  
+  filter(war_reg_season != 0) 
 
 mean_war <- nba_players %>% 
   summarise(mean_war = mean(war_reg_season))
 mean_war
+
 
 nba_players <- nba_players %>% 
   mutate(war_reg_good = case_when(war_reg_season > mean_war ~ TRUE,
@@ -84,9 +91,13 @@ nba_players <- nba_players %>%
                                   "No-way"))
 ```
 
+Added the following variables to our dataset:
 
+war_reg_good: mean wins for regular season are above 0 or not. 
 
-```{r team win pc}
+player_type: categorising the player as offensive, defensive etc.
+
+```{r team-win-pc}
 nba_players <- nba_players %>%
   mutate(team_win_pc = case_when(
     team == "MIL" ~ .767,
@@ -123,17 +134,15 @@ nba_players <- nba_players %>%
            
 ```
 
-
-
-
+### 7: Defense
 
 1. Testing if better defensive players have a better WAR in the 
 playoffs and regular season.
 
-$H_0$: Better defensive players have the same WAR in the regular
+$H_0$: Better defensive players have the same mean WAR in the regular
 season and playoffs as average or below average defenders.
 
-$H_1$: Better defensive players have the better WAR in the 
+$H_1$: Better defensive players have the better mean WAR in the 
 regular season and playoffs than average or below average defenders.
 
 ```{r war cor test}
@@ -200,6 +209,40 @@ This means that offensive efficiency is actually more important to WAR (wins
 above replacement) than defensive efficiency in both the regular season and 
 playoffs.
 
+### 8: Offensive
+
+1. Testing to see whether being a purely offensive leads to higher mean impact.
+Method: CLT-based approach
+
+$H_0$: Mean pace_impact when player can play offensive ("Offensive" or "Two-way)
+= mean pace_impact when player cannot play offensive but could be "Defensive", 
+or "No Way".
+
+$H_1$: Mean pace_impact when player can play offensive 
+("Offensive" or "Two-way)> mean pace_impact when player cannot play offensive 
+but could be "Defensive", or "No Way".
+
+$/alpha$=0.05
+
+```{r}
+nba_players_offense <- nba_players %>%
+  mutate(offense=ifelse(raptor_offense > 0, 1, 0))
+
+t.test(pace_impact ~ offense, 
+       data = nba_players_offense, 
+       var.equal = FALSE,
+       alternative = "greater", 
+       conf.level = 0.95)
+```
+
+
+Since our P-value of 0.4793 is greater than the alpha level of 0.05, we fail to 
+reject the null hypothesis. Since we conducted this test on our population, we 
+can say that being able to play offensively does not lend to having a higher
+impact on player possessions every 48 minutes. 
+
+
+### 9: Correlation- RaptoTotal and Winning Percentage
 
 2. Do the players on the team's raptor total correlate to the teams winning
 percentage?
@@ -207,7 +250,7 @@ percentage?
 ```{r making data setex-2}
 data_for_ex_2 <- nba_players %>%
   select(player_name, team, raptor_total, team_win_pc) 
- 
+
 
 ```
 
