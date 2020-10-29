@@ -123,6 +123,9 @@ nba_players <- nba_players %>%
 ```
 
 
+
+
+
 1. Testing if better defensive players have a better WAR in the 
 playoffs and regular season.
 
@@ -196,3 +199,78 @@ This means that offensive efficiency is actually more important to WAR (wins
 above replacement) than defensive efficiency in both the regular season and 
 playoffs.
 
+
+2. Do the players on the team's raptor total correlate to the teams winning
+percentage?
+
+```{r making data setex-2}
+data_for_ex_2 <- nba_players %>%
+  select(player_name, team, raptor_total, team_win_pc) 
+ 
+
+```
+
+```{r ex-2}
+mil_data <- data_for_ex_2 %>%
+  filter(team == "MIL") %>%
+  mutate(team_average_total_raptor = case_when(
+    team == "MIL" ~ mean(raptor_total)
+  ))
+
+raptors_data <- data_for_ex_2 %>%
+  filter(team == "TOR") %>%
+  mutate(team_average_total_raptor = case_when(
+    team == "TOR" ~ mean(raptor_total)
+  ))
+
+celtics_data <- data_for_ex_2 %>%
+  filter(team == "BOS") %>%
+  mutate(team_average_total_raptor = case_when(
+    team == "BOS" ~ mean(raptor_total)
+  ))
+
+pacers_data <- data_for_ex_2 %>%
+  filter(team == "IND") %>%
+  mutate(team_average_total_raptor = case_when(
+    team == "IND" ~ mean(raptor_total)
+  ))
+
+lakers_data <- data_for_ex_2 %>%
+  filter(team == "LAL") %>%
+  mutate(team_average_total_raptor = case_when(
+    team == "LAL" ~ mean(raptor_total)
+  ))
+
+clippers_data <- data_for_ex_2 %>%
+  filter(team == "LAC") %>%
+  mutate(team_average_total_raptor = case_when(
+    team == "LAC" ~ mean(raptor_total)
+  ))
+
+nuggets_data <- data_for_ex_2 %>%
+  filter(team == "DEN") %>%
+  mutate(team_average_total_raptor = case_when(
+    team == "DEN" ~ mean(raptor_total)
+  ))
+
+rockets_data <- data_for_ex_2 %>%
+  filter(team == "HOU") %>%
+  mutate(team_average_total_raptor = case_when(
+    team == "HOU" ~ mean(raptor_total)
+  ))
+
+```
+
+```{r combining data sets}
+total_data_ex_2 <-rbind(rockets_data, nuggets_data, clippers_data, lakers_data,
+                        pacers_data, celtics_data, raptors_data, mil_data)
+
+```
+
+```{r correlation between team win pct and team average raptor}
+total_data_ex_2 %>%
+  summarise(cor_team_win_team_raptor = cor(team_win_pc, team_average_total_raptor))
+
+
+```
+There is a weak correlation between team total raptor and team winning percentage.
