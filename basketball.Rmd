@@ -316,5 +316,83 @@ total_data_ex_2 %>%
   summarise(cor_team_win_team_raptor = cor(team_win_pc, team_average_total_raptor))
 
 
+
 ```
+
+```{r}
+
+boot_dist = numeric(1000)
+
+for(i in 1:1000){
+  set.seed(i)
+  indices <- sample(1:nrow(total_data_ex_2), replace = TRUE)
+  
+  boot_mean_2 <- total_data_ex_2 %>%
+    slice(indices) %>%
+    summarise(cor_team_win_team_raptor = cor(team_win_pc, team_average_total_raptor)) %>%
+    pull()
+  boot_dist[i] <- boot_mean_2
+  
+  boot_mean_2 <- tibble(boot_dist)
+  
+  confidence_interval_2 <- boot_mean_2 %>%
+       summarize(lower = quantile(boot_dist, 0.005),
+                upper = quantile(boot_dist, 0.995))
+}
+
+confidence_interval_2
+```
+
+```{r}
+ggplot(data = boot_mean_2, aes(x = boot_dist)) +
+  geom_histogram(binwidth = .007) +
+  labs(title = "Bootstrap Distribution of Correlation between team Win Percentage 
+       and AverageTeam Raptor", subtitle = "Between the top 4 teams in each 
+       conference",
+       x = "Correlation") +
+  geom_vline(xintercept = c(confidence_interval_2$lower, 
+                            confidence_interval_2$upper),
+             lwd = 2, color = "red")
+
+
+```
+
 There is a weak correlation between team total raptor and team winning percentage.
+
+### 10 Top Defensive Teams and Winning Percentage
+I am going to look at the mean team raptor defense for the 4 best teams in the
+NBA and the four worst teams in the NBA and see how they differ. (Then
+we should do the same with offense!!)
+
+
+```{r}
+data_for_ex_3 <- nba_players %>%
+  select(team, team_win_pc, raptor_defense)
+
+```
+
+```{r mutating data}
+
+data_for_ex_3 <- data_for_ex_3 %>%
+  filter(team == "MIL") %>%
+  mutate(team_average_defensive_raptor = case_when(
+    team == "MIL" ~ mean(raptor_defense)
+  ))
+
+data_for_ex_3 <- data_for_ex_3 %>%
+  filter(team == "TOR") %>%
+  mutate(team_average_defensive_raptor = case_when(
+    team == "TOR" ~ mean(raptor_defense)
+  ))
+
+data_for_ex_3 <- data_for_ex_3 %>%
+  filter(team == "LAL") %>%
+  mutate(team_average_defensive_raptor = case_when(
+    team == "LAL" ~ mean(raptor_defense)
+  ))
+
+data_for_ex_3 <- data_for_ex_2 %>%
+  filter(team == "LAC") %>%
+  mutate(team_average_defensive_raptor = case_when(
+    team == "LAC" ~ mean(raptor_defense)
+  ))
