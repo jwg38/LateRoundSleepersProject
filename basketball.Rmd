@@ -59,21 +59,30 @@ glimpse(nba_players)
 
 ### 4: Methodology
 
-The methodology section should include the variables used to address your research question, as well as any useful visualizations or summary statistics. As well, you should introduce and justify the statistical method(s) that you believe will be useful in answering your research question.
+The methodology section should include the variables used to address your 
+research question, as well as any useful visualizations or summary statistics. 
+As well, you should introduce and justify the statistical method(s) that you 
+believe will be useful in answering your research question.
 
 
 ### 5: Results
 
-Showcase how you arrived at answers to your question using any techniques we have learned in this class (and some beyond, if you’re feeling adventurous). Provide the main results from your analysis. The goal is not to do an exhaustive data analysis (i.e., do not calculate every statistic and procedure you have learned for every variable), but rather let me know that you are proficient at asking meaningful questions and answering them with results of data analysis, that you are proficient in using R, and that you are proficient at interpreting and presenting the results. Focus on methods that help you begin to answer your research questions.
+Showcase how you arrived at answers to your question using any techniques we have 
+learned in this class (and some beyond, if you’re feeling adventurous). Provide 
+the main results from your analysis. The goal is not to do an exhaustive data 
+analysis (i.e., do not calculate every statistic and procedure you have learned 
+for every variable), but rather let me know that you are proficient at asking 
+meaningful questions and answering them with results of data analysis, that you 
+are proficient in using R, and that you are proficient at interpreting and 
+presenting the results. Focus on methods that help you begin to answer your 
+research questions.
 
 
 ### 6: Adding Variables and Cleaning Data
 
 ```{r variables}
-nba_players <- nba_players %>% 
-  filter(war_reg_season != 0) 
-
 mean_war <- nba_players %>% 
+  filter(war_reg_season != 0) %>% 
   summarise(mean_war = mean(war_reg_season))
 mean_war
 
@@ -134,6 +143,40 @@ nba_players <- nba_players %>%
            
 ```
 
+### Visualizations
+```{r visualization}
+#raptor visualization
+ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
+  geom_point() + geom_hline(yintercept = 0, lwd = 1, col = "red", lty = 2) +
+  geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)
+
+#all NBA
+all_nba <- nba_players %>% 
+  filter(player_name == "Giannis Antetokounpo" |
+         player_name == "LeBron James" |
+         player_name == "James Harden" |
+         player_name == "Anthony Davis" |
+         player_name == "Luka Doncic" |
+         player_name == "Kawahi Leonard" |
+         player_name == "Nikola Jokic" |
+         player_name == "Damien Lillard" |
+         player_name == "Chris Paul" |
+         player_name == "Pascal Siakam" |
+         player_name == "Jayson Tatum" |
+         player_name == "Jimmy Butler" |
+         player_name == "Rudy Gobert" |
+         player_name == "Ben Simmons" |
+         player_name == "Russell Westbrook") 
+
+all_nba %>% 
+  filter(season_type== "RS")
+ggplot(data = all_nba, aes(x = player_name, y = raptor_total)) + geom_point()
+  
+
+
+```
+
+
 ### 7: Defense
 
 1. Testing if better defensive players have a better WAR in the 
@@ -146,25 +189,12 @@ $H_1$: Better defensive players have the better mean WAR in the
 regular season and playoffs than average or below average defenders.
 
 ```{r war cor test}
-nba_players <- nba_players %>% 
-  mutate(log_war_reg = log(war_reg_season)) 
 
-#checking mean WAR
-mean_war <- nba_players %>% 
-  summarise(mean_war = mean(log_war_reg))
-mean_war
 
-mean_war_po <- playoff_players %>% 
-  summarise(mean_war = mean(war_playoffs))
-mean_war_po
-
-ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
-  geom_point() + geom_hline(yintercept = 0, lwd = 1, col = "red", lty = 2) +
-  geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)
 
 
 #linear model tests
-exp_war_reg <- lm(log_war_reg ~ raptor_defense + raptor_offense, 
+exp_war_reg <- lm(war_reg_season ~ raptor_defense + raptor_offense, 
               data = nba_players)
 tidy(exp_war_reg)
 
@@ -249,7 +279,7 @@ percentage?
 
 ```{r making data setex-2}
 data_for_ex_2 <- nba_players %>%
-  select(player_name, team, raptor_total, team_win_pc) 
+  select(team, raptor_total, team_win_pc) 
 
 
 ```
@@ -313,49 +343,17 @@ total_data_ex_2 <-rbind(rockets_data, nuggets_data, clippers_data, lakers_data,
 
 ```{r correlation between team win pct and team average raptor}
 total_data_ex_2 %>%
-  summarise(cor_team_win_team_raptor = cor(team_win_pc, team_average_total_raptor))
+  summarise(cor_team_win_team_raptor = cor(team_win_pc, 
+                                           team_average_total_raptor))
+
+ggplot(data = total_data_ex_2, aes(x = team_average_total_raptor, 
+                                   y = team_win_pc)) +
+  geom_point()
 
 
 
 ```
 
-```{r}
-
-boot_dist = numeric(1000)
-
-for(i in 1:1000){
-  set.seed(i)
-  indices <- sample(1:nrow(total_data_ex_2), replace = TRUE)
-  
-  boot_mean_2 <- total_data_ex_2 %>%
-    slice(indices) %>%
-    summarise(cor_team_win_team_raptor = cor(team_win_pc, team_average_total_raptor)) %>%
-    pull()
-  boot_dist[i] <- boot_mean_2
-  
-  boot_mean_2 <- tibble(boot_dist)
-  
-  confidence_interval_2 <- boot_mean_2 %>%
-       summarize(lower = quantile(boot_dist, 0.005),
-                upper = quantile(boot_dist, 0.995))
-}
-
-confidence_interval_2
-```
-
-```{r}
-ggplot(data = boot_mean_2, aes(x = boot_dist)) +
-  geom_histogram(binwidth = .007) +
-  labs(title = "Bootstrap Distribution of Correlation between team Win Percentage 
-       and AverageTeam Raptor", subtitle = "Between the top 4 teams in each 
-       conference",
-       x = "Correlation") +
-  geom_vline(xintercept = c(confidence_interval_2$lower, 
-                            confidence_interval_2$upper),
-             lwd = 2, color = "red")
-
-
-```
 
 There is a weak correlation between team total raptor and team winning percentage.
 
@@ -371,28 +369,4 @@ data_for_ex_3 <- nba_players %>%
 
 ```
 
-```{r mutating data}
 
-data_for_ex_3 <- data_for_ex_3 %>%
-  filter(team == "MIL") %>%
-  mutate(team_average_defensive_raptor = case_when(
-    team == "MIL" ~ mean(raptor_defense)
-  ))
-
-data_for_ex_3 <- data_for_ex_3 %>%
-  filter(team == "TOR") %>%
-  mutate(team_average_defensive_raptor = case_when(
-    team == "TOR" ~ mean(raptor_defense)
-  ))
-
-data_for_ex_3 <- data_for_ex_3 %>%
-  filter(team == "LAL") %>%
-  mutate(team_average_defensive_raptor = case_when(
-    team == "LAL" ~ mean(raptor_defense)
-  ))
-
-data_for_ex_3 <- data_for_ex_2 %>%
-  filter(team == "LAC") %>%
-  mutate(team_average_defensive_raptor = case_when(
-    team == "LAC" ~ mean(raptor_defense)
-  ))
