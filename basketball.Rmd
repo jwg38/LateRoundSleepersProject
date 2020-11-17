@@ -148,7 +148,7 @@ nba_players <- nba_players %>%
 #raptor visualization
 ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
   geom_point() + geom_hline(yintercept = 0, lwd = 1, col = "red", lty = 2) +
-  geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)
+  geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)+facet_wrap(~season_type)
 
 #all NBA
 all_nba <- nba_players %>% 
@@ -170,9 +170,16 @@ all_nba <- nba_players %>%
 
 all_nba %>% 
   filter(season_type== "RS")
-ggplot(data = all_nba, aes(x = player_name, y = raptor_total)) + geom_point()
-  
 
+ggplot(data = all_nba) + geom_bar(aes(player_name, raptor_total, fill = player_name, xaxt=FALSE), stat = "identity")+theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
+#remove x axis values, not label 
+
+###Visualisation
+
+player_type_data <- nba_players %>%
+  filter(player_type != "NA")
+  
+ggplot(data=player_type_data, aes(x=player_type, y=pace_impact))+geom_violin()
 
 ```
 
