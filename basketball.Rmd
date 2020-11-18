@@ -148,18 +148,21 @@ nba_players <- nba_players %>%
 #raptor visualization
 ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
   geom_point() + geom_hline(yintercept = 0, lwd = 1, col = "red", lty = 2) +
-  geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)+facet_wrap(~season_type)
+  geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)+facet_wrap(~season_type) +
+  labs(title = "Distrobution of NBA Players", subtitle = "By Raptor Offense and Raptor Defense")
+
+#Needs explanation
 
 #all NBA
 all_nba <- nba_players %>% 
-  filter(player_name == "Giannis Antetokounpo" |
+  filter(player_name == "Giannis Antetokounmpo" |
          player_name == "LeBron James" |
          player_name == "James Harden" |
          player_name == "Anthony Davis" |
          player_name == "Luka Doncic" |
-         player_name == "Kawahi Leonard" |
+         player_name == "Kawhi Leonard" |
          player_name == "Nikola Jokic" |
-         player_name == "Damien Lillard" |
+         player_name == "Damian Lillard" |
          player_name == "Chris Paul" |
          player_name == "Pascal Siakam" |
          player_name == "Jayson Tatum" |
@@ -171,7 +174,16 @@ all_nba <- nba_players %>%
 all_nba %>% 
   filter(season_type== "RS")
 
-ggplot(data = all_nba) + geom_bar(aes(player_name, raptor_total, fill = player_name, xaxt=FALSE), stat = "identity")+theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
+ggplot(data = all_nba) + geom_bar(aes(player_name, raptor_total, fill = player_name, xaxt=FALSE), stat = "identity")+theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
+  labs(title = "Members of the All NBA Teams Total Raptor")
+
+ggplot(data = all_nba) +
+  geom_bar(aes(player_name, war_reg_season, fill = player_name, xaxt=FALSE), 
+           stat = "identity")+theme(axis.title.x=element_blank(),
+                                    axis.text.x=element_blank(), 
+                                    axis.ticks.x=element_blank()) +
+  labs(title = "Members of the All NBA Teams WAR")
+
 #remove x axis values, not label 
 
 ###Visualisation
@@ -179,9 +191,55 @@ ggplot(data = all_nba) + geom_bar(aes(player_name, raptor_total, fill = player_n
 player_type_data <- nba_players %>%
   filter(player_type != "NA")
   
-ggplot(data=player_type_data, aes(x=player_type, y=pace_impact))+geom_violin()
+ggplot(data=player_type_data, aes(x=player_type, y=pace_impact))+geom_violin() +
+  labs(title = "Offensive and Two Way Players Play at a Faster Pace",
+  subtitle = " Compaired to Defensive and No Way Players")
+
+
+
+
+
 
 ```
+
+Explanations:
+
+Graph 1: Graph one shows the distribution of NBA players comparing both their 
+offensive and defensive raptor. Each point represents one player and their 
+raptors. The first graph shows the players in this years playoffs, and there
+seems to be more outliers in it. In both graphs, there looks to be a large 
+clump at the axis, meaning that the majority of the NBA has both an offensize 
+and defensive raptor around zero. 
+
+Graph 2: Graph two depicts the member of the three all NBA Teams and their 
+total raptors. It is interesting to see that three of the players who
+were awarded this honor had a negative total raptor. Rudy Gobert and Russell
+Westbrook were members of the All NBA Third Team, so if any of these players
+would have negative total raptors it would be them, but Chris Paul's negative
+raptor total is surprising. It is also interesting to notice that James Harden
+had the highest total raptor, because he is a player known for his incredible 
+offense, but very lackluster defense. I would have expected his bad defense
+to even out his great offensive raptor, but it did not. His total raptor is 
+just over 5 points higher than the MVP Giannis Antetakounmpo.
+
+Graph 3: NEED TO EXPLAIN BC I DONT GET WAR THAT MUCH. Interesting things:
+Chris Paul had a negative total raptor but is very high WAR. 
+No negative WARs
+Russell with low WAR and neg raptor
+
+
+Graph 4: Graph three depicts the pace of play by player type. A defensive 
+player is a player with a good defensive raptor, a no way player is not
+great at either, an offensive player has a good offensive raptor, and a two
+way player has a good offensive and defensive raptor. The offensive and two
+way players often look to score and play at a fast pace, which this violin
+plot clearly shows. The defensive players want to slow the game down and
+force the offensive player to be uncomfortable and play slow. The no way
+players are often role players, meaning that they do not affect the pace
+of the game enough to make it much faster.
+
+
+
 
 
 ### 7: Defense
@@ -199,7 +257,6 @@ regular season and playoffs than average or below average defenders.
 
 
 
-
 #linear model tests
 exp_war_reg <- lm(war_reg_season ~ raptor_defense + raptor_offense, 
               data = nba_players)
@@ -212,11 +269,11 @@ aug_reg <- augment(exp_war_reg)
 aug_reg %>%
   slice(1:3)
 
-ggplot(data = aug_reg, 
-       aes(x = 1:nrow(nba_players), 
-           y = .resid)) + 
-  geom_point() + 
-  labs(x = "Index", y = "Residual")
+#ggplot(data = aug_reg, 
+       #aes(x = 1:nrow(nba_players), 
+           #y = .resid)) + 
+  #geom_point() + 
+  #labs(x = "Index", y = "Residual")
 
 ggplot(aug_reg, mapping = aes(x = .fitted, y = .resid)) +
   geom_point() + 
@@ -231,9 +288,9 @@ ggplot(aug_reg, mapping = aes(sample = .resid)) +
   stat_qq() + 
   stat_qq_line()
 
-exp_war_po <- lm(war_playoffs ~ raptor_defense + raptor_offense, 
-              data = playoff_players)
-tidy(exp_war_po)
+#exp_war_po <- lm(war_playoffs ~ raptor_defense + raptor_offense, 
+              #data = playoff_players)
+#tidy(exp_war_po)
 ```
 
 Expected regular season WAR = 1.70 + 0.142 * Defensive RAPTOR + 0.306 * 
@@ -285,81 +342,36 @@ impact on player possessions every 48 minutes.
 percentage?
 
 ```{r making data setex-2}
-data_for_ex_2 <- nba_players %>%
-  select(team, raptor_total, team_win_pc) 
+team_data <- nba_players %>%
+  select(team, team_win_pc, raptor_total) %>%
+  group_by(team) %>%
+  summarise(mean(raptor_total))
+
+#team_win_pct_data <- nba_players %>%
+ # select(team, team_win_pc) %>%
+  #group_by(team_win_pc)
+
+
+
+
 
 
 ```
 
 ```{r ex-2}
-mil_data <- data_for_ex_2 %>%
-  filter(team == "MIL") %>%
-  mutate(team_average_total_raptor = case_when(
-    team == "MIL" ~ mean(raptor_total)
-  ))
-
-raptors_data <- data_for_ex_2 %>%
-  filter(team == "TOR") %>%
-  mutate(team_average_total_raptor = case_when(
-    team == "TOR" ~ mean(raptor_total)
-  ))
-
-celtics_data <- data_for_ex_2 %>%
-  filter(team == "BOS") %>%
-  mutate(team_average_total_raptor = case_when(
-    team == "BOS" ~ mean(raptor_total)
-  ))
-
-pacers_data <- data_for_ex_2 %>%
-  filter(team == "IND") %>%
-  mutate(team_average_total_raptor = case_when(
-    team == "IND" ~ mean(raptor_total)
-  ))
-
-lakers_data <- data_for_ex_2 %>%
-  filter(team == "LAL") %>%
-  mutate(team_average_total_raptor = case_when(
-    team == "LAL" ~ mean(raptor_total)
-  ))
-
-clippers_data <- data_for_ex_2 %>%
-  filter(team == "LAC") %>%
-  mutate(team_average_total_raptor = case_when(
-    team == "LAC" ~ mean(raptor_total)
-  ))
-
-nuggets_data <- data_for_ex_2 %>%
-  filter(team == "DEN") %>%
-  mutate(team_average_total_raptor = case_when(
-    team == "DEN" ~ mean(raptor_total)
-  ))
-
-rockets_data <- data_for_ex_2 %>%
-  filter(team == "HOU") %>%
-  mutate(team_average_total_raptor = case_when(
-    team == "HOU" ~ mean(raptor_total)
-  ))
-
-```
-
-```{r combining data sets}
-total_data_ex_2 <-rbind(rockets_data, nuggets_data, clippers_data, lakers_data,
-                        pacers_data, celtics_data, raptors_data, mil_data)
-
-```
-
-```{r correlation between team win pct and team average raptor}
-total_data_ex_2 %>%
-  summarise(cor_team_win_team_raptor = cor(team_win_pc, 
-                                           team_average_total_raptor))
-
-ggplot(data = total_data_ex_2, aes(x = team_average_total_raptor, 
-                                   y = team_win_pc)) +
-  geom_point()
-
 
 
 ```
+
+
+
+
+
+
+
+
+
+
 
 
 There is a weak correlation between team total raptor and team winning percentage.
