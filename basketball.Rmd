@@ -342,7 +342,7 @@ can say that being able to play offensively does not lend to having a higher
 impact on player possessions every 48 minutes. 
 
 
-### 9: Correlation- RaptoTotal and Winning Percentage
+### 9: Correlation- RaptorTotal and Winning Percentage
 
 2. Do the players on the team's raptor total correlate to the teams winning
 percentage?
@@ -392,6 +392,7 @@ team_win_pct_data <- nba_players %>%
 team_data <- inner_join(team_data_rap, team_win_pct_data, by = "team")
 
 ggplot(data = team_data, aes(x = team_win_pc, y= avg_rap)) +geom_point() +
+  geom_smooth(method = "lm", se = FALSE, col = "red", lyt = 2, lwd = 1) +
   labs(title = "There are predominantly teams with negative avergae raptor",
        subtitle = "Only five teams that fit the positive raptor, above .500 
        winning percentage", 
@@ -432,7 +433,68 @@ linear and equal variance relationship in our data points. Next, we tested for
 normality using a QQ plot. This came out less fitting, but we realized there are
 only 30 data points so it is expected that the tests won't exactly fit. 
 
-### 10 Correlation between WAR and Raptor
+
+### 10 Correlation - Team Average WAR and Winning Percentage
+
+```{r}
+
+team_data_war <- nba_players %>%
+  select(team, team_win_pc, war_reg_season) %>%
+  group_by(team) %>%
+  summarise(avg_war = mean(war_reg_season))
+
+team_war_data <- inner_join(team_data_war, team_win_pct_data, by = "team")
+
+ggplot(data = team_war_data, aes(x = team_win_pc, y= avg_war)) +geom_point() +
+  geom_smooth(method = "lm", se = FALSE, col = "red", lyt = 2, lwd = 1) +
+  labs(title = "ADD TITLE",
+       subtitle = "ADD SUBTITLE", 
+       y= "Average WAR", x = "Team Winning Percantage")
+
+lm_war <- lm(team_win_pc ~ avg_war, data = team_war_data)
+tidy(lm_war)
+
+aug_war <- augment(lm_war)
+aug_war %>%
+  slice(1:3)
+
+ggplot(aug_war, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
+  labs(x = "Predicted Winning Percentage", y = "Residuals")
+
+ggplot(aug_war, mapping = aes(x = .resid)) +
+  geom_histogram(bins = 15) + 
+  labs(x = "Residuals")
+
+ggplot(aug_war, mapping = aes(sample = .resid)) +
+  stat_qq() + 
+  stat_qq_line()
+```
+
+I think team average WAR has a better correlation to win PCT than team average 
+raptor
+
+### 11 Comparing WAR and Raptor Values
+
+```{r compairing War and Raptor Values}
+
+nba_players %>%
+ select(war_reg_season, player_name) %>%
+  arrange(desc(war_reg_season)) %>%
+  slice(1:10)
+
+
+nba_players %>%
+ select(raptor_total, player_name) %>%
+  arrange(desc(raptor_total)) %>%
+  slice(1:10)
+````
+
+
+
+
+
 
 
 
