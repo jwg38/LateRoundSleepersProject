@@ -1,6 +1,6 @@
 ---
 title: "The Recipe for Success in the NBA"
-subtitle: "due Thursday, Oct 29 at 11:59p"
+subtitle: "due Friday, Nov 20 at 11:59pm"
 author: "Late Round Sleepers: Alex Jackson, Evan Finley, Jack Griffin, Aliya Kamran"
 output: pdf_document
 ---
@@ -9,55 +9,82 @@ output: pdf_document
 knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE)
 ```
 
-## Environment and Libraries
+# 1: Introduction
+
+We are investigating what makes NBA players successful in context of their team 
+play. The reason for choosing this study is that are all NBA fans and eager to 
+apply our new knowledge of data science to the game will allow us to have a 
+better understanding for the game and make us more informed viewers. 
+Furthermore, basketball statistics are fairly new and it will be interesting to 
+discover if our perceived notions of certain players match the statistical data. 
+
+In particular, we defined our investigation of "success" of NBA players and team
+on the following hypothesis tests and questions:
+
+1. Does the average offensive and defensive raptor for players differ between 
+the regular season and post season?
+
+2. Does the average raptor differ greatly from the average WAR between members 
+of the All NBA teams?
+
+3. How are the variables pace impact, raptor total and war total impacted by 
+player type?
+
+4. Do better defensive players have a better WAR in the playoffs and regular 
+season?
+
+5. Do players with offensive capabilities have greater impact on team 
+possessions per 48 minutes as compared to players without offensive 
+capabilities?
+
+6. 
+
+7. 
+
+8. Which statistic, total raptor or total WAR, is better at indicicating player 
+success? 
+
+Sources:
+https://fivethirtyeight.com/features/introducing-raptor-our-new-metric-for-the-modern-nba/
+
+
+# 2: Data description
 
 ```{r environ}
 library(tidyverse)
 nba_players <- read.csv("https://projects.fivethirtyeight.com/nba-model/2020/latest_RAPTOR_by_team.csv")
 ```
 
-### 1: Introduction
-
-We are investigating what makes NBA players successful in various seasons. We
-are all NBA fans and looking into statistics about the NBA will allow us to 
-have a better understanding for the game and make us more informed. 
-Basketball statistics are fairly new and it will be interesting to discover if
-our perceived notions of certain players match the statistical data. 
-
-In particular, we want to test the following hypothesis and questions:
-
-If defensive or offensive efficiency affects winning percentage the
-most.
-
-Better defensive players have a better winning percentage in the playoffs and 
-regular season.
-
-Players who score the most do not have the highest winning percentage.
-
-Players who have the most offensive possessions win more games.
-
-Sources:
-https://fivethirtyeight.com/features/introducing-raptor-our-new-metric-for-the-modern-nba/
-
-
-### 2: Data description
-
-
-We wish to explore the NBA-Raptor data set. Raptor is a player efficiency rating 
+We are exploring the NBA-Raptor data set. Raptor is a player efficiency rating 
 system.This data set has tracked multiple team and player analysis over a six 
 year period. Each observation is an NBA player with variables about their 
 statistics. It has variables such as players points per game, team winning 
 percentage, average team possessions per game, and many more. The player data
 is stats from every NBA games since 2014. Raptor was made by Fivethirtyeight. 
 
+The data set has 808 observatios and 23 variables with the investigation focusing on the following variables:
 
-### 3: Glimpse of data
+`player_name`:	Player name
+`season`:	Season
+`season_type`:	Regular season (RS) or playoff (PO)
+`team`:	Basketball-Reference ID of team
+`poss`:	Possessions played
+`mp`:	Minutes played
+`raptor_offense`:	Points above average per 100 possessions added by player on offense, using both box and on-off components
+`raptor_defense`:	Points above average per 100 possessions added by player on defense, using both box and on-off components
+`raptor_total`:	Points above average per 100 possessions added by player on both offense and defense, using both box and on-off components
+`war_total`:	Wins Above Replacement between regular season and playoffs
+`war_reg_season`:	Wins Above Replacement for regular season
+`war_playoffs`:	Wins Above Replacement for playoffs
+`pace_impact`:	Player impact on team possessions per 48 minutes
+
+## 3: Glimpse of data
 
 ```{r glimpse}
 glimpse(nba_players)
 ```
 
-### 4: Methodology
+# 4: Methodology
 
 The methodology section should include the variables used to address your 
 research question, as well as any useful visualizations or summary statistics. 
@@ -65,22 +92,28 @@ As well, you should introduce and justify the statistical method(s) that you
 believe will be useful in answering your research question.
 
 
-### 5: Results
+To start with, we looked at the placement of player offensive and defensive capabilities by season type. To do this, we used the variables season_type, raptor_offense and raptor_defense and visualized the individual placements. 
+`season_type`:	Regular season (RS) or playoff (PO)
 
-Showcase how you arrived at answers to your question using any techniques we have 
-learned in this class (and some beyond, if you’re feeling adventurous). Provide 
-the main results from your analysis. The goal is not to do an exhaustive data 
-analysis (i.e., do not calculate every statistic and procedure you have learned 
-for every variable), but rather let me know that you are proficient at asking 
-meaningful questions and answering them with results of data analysis, that you 
-are proficient in using R, and that you are proficient at interpreting and 
-presenting the results. Focus on methods that help you begin to answer your 
-research questions.
+In order to input the team winning percentage in the following section, we used the following variable, 
+`team`:	Basketball-Reference ID of team
+
+In the test for defensive players and WAR during different seasons, we chose to 
+use the linear model method to check for correlations of various corresponding variables. 
+`raptor_defense`:	Points above average per 100 possessions added by player on defense, using both box and on-off components
+`raptor_offense`:	Points above average per 100 possessions added by player on offense, using both box and on-off components
 
 
-### 6: Adding Variables and Cleaning Data
+`raptor_total`:	Points above average per 100 possessions added by player on both offense and defense, using both box and on-off components
+`war_total`:	Wins Above Replacement between regular season and playoffs
 
-```{r variables}
+
+`pace_impact`:	Player impact on team possessions per 48 minutes
+
+
+### Creating telling variables and cleaning data
+
+```{r variables, echo = FALSE}
 nba_players <- nba_players %>% 
   mutate(player_type = case_when(raptor_offense > 0 & raptor_defense > 0 ~ 
                                    "Two-way",
@@ -120,16 +153,18 @@ nba_players <- nba_players %>%
       team == "SAC" ~ .431,
       team == "NOP" ~ .417,
       team == "MIN" ~ .297,
-      team == "GSW" ~ .231))
+      team == "GSW" ~ .231)) ## the winning percentage source is cited below
 ```
 
 Added the following variables to our dataset:
 
-player_type: categorizing the player as offensive, defensive etc.
+`player_type`: categorizing the player as offensive, defensive etc.
 
-team_win_pc: gives each player their associated win percentage. 
+`team_win_pc`: gives each player their associated win percentage. 
+Citation: https://www.nba.com/standings
 
-### Visualizations
+### Interpreting results from visualizations
+
 ```{r visualization}
 #raptor visualization
 ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
@@ -311,7 +346,9 @@ outweigh the importance of efficient defense.
 
 ### 8: Offensive
 
-1. Testing to see whether being a purely offensive leads to higher mean impact.
+1. Testing to see whether a player who has a positive offensive raptor has a 
+higher mean pace impact.
+
 Method: CLT-based approach
 
 $H_0$: Mean pace_impact when player can play offensive ("Offensive" or "Two-way)
@@ -319,7 +356,7 @@ $H_0$: Mean pace_impact when player can play offensive ("Offensive" or "Two-way)
 or "No Way".
 
 $H_1$: Mean pace_impact when player can play offensive 
-("Offensive" or "Two-way)> mean pace_impact when player cannot play offensive 
+("Offensive" or "Two-way) > mean pace_impact when player cannot play offensive 
 but could be "Defensive", or "No Way".
 
 $/alpha$=0.05
@@ -336,7 +373,7 @@ t.test(pace_impact ~ offense,
 ```
 
 
-Since our P-value of 0.4793 is greater than the alpha level of 0.05, we fail to 
+Since our P-value of 0.6016 is greater than the alpha level of 0.05, we fail to 
 reject the null hypothesis. Since we conducted this test on our population, we 
 can say that being able to play offensively does not lend to having a higher
 impact on player possessions every 48 minutes. 
@@ -344,8 +381,9 @@ impact on player possessions every 48 minutes.
 
 ### 9: Correlation- RaptorTotal and Winning Percentage
 
-2. Do the players on the team's raptor total correlate to the teams winning
+2. Does the team's average total raptor correlate to the teams average winning
 percentage?
+
 
 ```{r making data setex-2, message = FALSE, warning = FALSE}
 team_data_rap <- nba_players %>%
@@ -433,8 +471,8 @@ linear and equal variance relationship in our data points. Next, we tested for
 normality using a QQ plot. This came out less fitting, but we realized there are
 only 30 data points so it is expected that the tests won't exactly fit. 
 
-
 ### 10 Correlation - Team Average WAR and Winning Percentage
+
 
 ```{r}
 
@@ -492,10 +530,6 @@ nba_players %>%
 ````
 
 
+### Discussion
 
-
-
-
-
-
-
+This section is a conclusion and discussion. This will require a summary of what you have learned about your research question along with statistical arguments supporting your conclusions. Also, critique your own methods and provide suggestions for improving your analysis. Issues pertaining to the reliability and validity of your data and appropriateness of the statistical analysis should also be discussed here. A paragraph on what you would do differently if you were able to start over with the project or what you would do next if you were going to continue work on the project should also be included.
