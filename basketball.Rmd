@@ -170,7 +170,7 @@ Citation: https://www.nba.com/standings
 ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
   geom_point() + geom_hline(yintercept = 0, lwd = 1, col = "red", lty = 2) +
   geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)+facet_wrap(~season_type) +
-  labs(title = "Distrobution of NBA Players", 
+  labs(title = "Distribution of NBA Players", 
        subtitle = "With the first quadrant being the target area for any player",
        y= "Offensive Raptor Grade", x = "Defensive Raptor Grade")
 
@@ -510,8 +510,18 @@ ggplot(aug_war, mapping = aes(sample = .resid)) +
   stat_qq_line()
 ```
 
-I think team average WAR has a better correlation to win PCT than team average 
-raptor
+Expected team winning percentage = 0.2012 + 0.3326(team average raptor)
+
+For every single unit increase in team average war, it is expected there will
+be an increase in winning percentage of 33.26%. The large increase of win
+percentage is due to the fact that the team average Wars are very small and 
+very similar, a one point jump would create an outlier, so the 33% increase
+to the win percentage is justified.
+
+We tested for equal variance and linearity first. Overall we observed a roughly
+linear and equal variance relationship in our data points. Next, we tested for
+normality using a QQ plot. This came out less fitting than the raptor test, but 
+the normality is good enough to make it accurate.
 
 ### 11 Comparing WAR and Raptor Values
 
@@ -528,6 +538,19 @@ nba_players %>%
   arrange(desc(raptor_total)) %>%
   slice(1:10)
 ````
+
+This simple look into the players with the top 10 highest Total Raptors and 
+Total Wars says a lot about each variable. The top 10 players in terms of War
+are household names and allstars. They are some of the best players in the NBA.
+Conversely, the top 10 players in terms of Raptor are random players. This being
+the case, I would argue that War is a more accurate variable whenever looking 
+for the best players. War shows the players that are more important to a teams
+win above replacement, meaning that the best players would have the highest 
+war. In contrast, the players with the highest raptors could be statistical
+anomalies, and the best players clearly do not have the highest raptors. This
+is clearest when noticing that Alize Johnson, who average 6.9 minuets per game
+for only 17 games last season, has a raptor 100 points over leauge MVP Giannis
+Antetokounmpo.
 
 
 ### Discussion
