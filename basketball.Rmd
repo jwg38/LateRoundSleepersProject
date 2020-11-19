@@ -1,7 +1,7 @@
 ---
-title: "Final Project Draft"
+title: "The Recipe for Success in the NBA"
 subtitle: "due Thursday, Oct 29 at 11:59p"
-author: "Late Round Sleepers: Alex Jackson, Evan Finley, Jack White, Aliya Kamran"
+author: "Late Round Sleepers: Alex Jackson, Evan Finley, Jack Griffin, Aliya Kamran"
 output: pdf_document
 ---
 
