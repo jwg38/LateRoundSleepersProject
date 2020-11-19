@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE)
 ```
 
 ## Environment and Libraries
@@ -81,67 +81,53 @@ research questions.
 ### 6: Adding Variables and Cleaning Data
 
 ```{r variables}
-mean_war <- nba_players %>% 
-  filter(war_reg_season != 0) %>% 
-  summarise(mean_war = mean(war_reg_season))
-mean_war
-
-
 nba_players <- nba_players %>% 
-  mutate(war_reg_good = case_when(war_reg_season > mean_war ~ TRUE,
-                                  war_reg_season <= mean_war ~ FALSE),
-         player_type = case_when(raptor_offense > 0 & raptor_defense > 0 ~ 
+  mutate(player_type = case_when(raptor_offense > 0 & raptor_defense > 0 ~ 
                                    "Two-way",
                                 raptor_offense > 0 & raptor_defense < 0 ~ 
                                   "Offensive",
                                 raptor_offense < 0 & raptor_defense > 0 ~ 
                                   "Defensive",
                                 raptor_offense < 0 & raptor_defense < 0 ~ 
-                                  "No-way"))
+                                  "No-way"),
+         team_win_pc = case_when(
+      team == "MIL" ~ .767,
+      team == "TOR" ~ .736,
+      team == "BOS" ~ .667,
+      team == "IND" ~ .616,
+      team == "MIA" ~ .603,
+      team == "PHI" ~ .589,
+      team == "BRK" ~ .486,
+      team == "ORL" ~ .452,
+      team == "WAS" ~ .347,
+      team == "CHA" ~ .354,
+      team == "CHI" ~ .338,
+      team == "NYK" ~ .318,
+      team == "DET" ~ .303,
+      team == "ATL" ~ .299,
+      team == "CLE" ~ .292,
+      team == "LAL" ~ .732,
+      team == "LAC" ~ .681,
+      team == "DEN" ~ .630,
+      team == "HOU" ~ .611,
+      team == "OKC" ~ .611,
+      team == "UTA" ~ .611,
+      team == "DAL" ~ .573,
+      team == "POR" ~ .473,
+      team == "MEM" ~ .466,
+      team == "PHO" ~ .466,
+      team == "SAS" ~ .451,
+      team == "SAC" ~ .431,
+      team == "NOP" ~ .417,
+      team == "MIN" ~ .297,
+      team == "GSW" ~ .231))
 ```
 
 Added the following variables to our dataset:
 
-war_reg_good: mean wins for regular season are above 0 or not. 
+player_type: categorizing the player as offensive, defensive etc.
 
-player_type: categorising the player as offensive, defensive etc.
-
-```{r team-win-pc}
-nba_players <- nba_players %>%
-  mutate(team_win_pc = case_when(
-    team == "MIL" ~ .767,
-    team == "TOR" ~ .736,
-    team == "BOS" ~ .667,
-    team == "IND" ~ .616,
-    team == "MIA" ~ .603,
-    team == "PHI" ~ .589,
-    team == "BRK" ~ .486,
-    team == "ORL" ~ .452,
-    team == "WAS" ~ .347,
-    team == "CHA" ~ .354,
-    team == "CHI" ~ .338,
-    team == "NYK" ~ .318,
-    team == "DET" ~ .303,
-    team == "ATL" ~ .299,
-    team == "CLE" ~ .292,
-    team == "LAL" ~ .732,
-    team == "LAC" ~ .681,
-    team == "DEN" ~ .630,
-    team == "HOU" ~ .611,
-    team == "OKC" ~ .611,
-    team == "UTA" ~ .611,
-    team == "DAL" ~ .573,
-    team == "POR" ~ .473,
-    team == "MEM" ~ .466,
-    team == "PHO" ~ .466,
-    team == "SAS" ~ .451,
-    team == "SAC" ~ .431,
-    team == "NOP" ~ .417,
-    team == "MIN" ~ .297,
-    team == "GSW" ~ .231
-  ))
-           
-```
+team_win_pc: gives each player their associated win percentage. 
 
 ### Visualizations
 ```{r visualization}
@@ -149,9 +135,9 @@ nba_players <- nba_players %>%
 ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
   geom_point() + geom_hline(yintercept = 0, lwd = 1, col = "red", lty = 2) +
   geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)+facet_wrap(~season_type) +
-  labs(title = "Distrobution of NBA Players", subtitle = "By Raptor Offense and Raptor Defense")
-
-#Needs explanation
+  labs(title = "Distrobution of NBA Players", 
+       subtitle = "With the first quadrant being the target area for any player",
+       y= "Offensive Raptor Grade", x = "Defensive Raptor Grade")
 
 #all NBA
 all_nba <- nba_players %>% 
@@ -171,20 +157,24 @@ all_nba <- nba_players %>%
          player_name == "Ben Simmons" |
          player_name == "Russell Westbrook") 
 
-all_nba %>% 
+all_nba <- all_nba %>% 
   filter(season_type== "RS")
 
-ggplot(data = all_nba) + geom_bar(aes(player_name, raptor_total, fill = player_name, xaxt=FALSE), stat = "identity")+theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
-  labs(title = "Members of the All NBA Teams Total Raptor")
+ggplot(data = all_nba) + geom_bar(aes(player_name, raptor_total, 
+                                      fill = player_name, xaxt=FALSE), stat = "identity")+theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
+  labs(title = "Members of the All NBA Teams Total Raptor", 
+       y = "Total Raptor Grade",
+       fill = "Player Name")
 
 ggplot(data = all_nba) +
   geom_bar(aes(player_name, war_reg_season, fill = player_name, xaxt=FALSE), 
            stat = "identity")+theme(axis.title.x=element_blank(),
                                     axis.text.x=element_blank(), 
                                     axis.ticks.x=element_blank()) +
-  labs(title = "Members of the All NBA Teams WAR")
+  labs(title = "Members of the All NBA Teams' WAR",
+       fill = "Player Name", y = "WAR")
 
-#remove x axis values, not label 
+
 
 ###Visualisation
 
@@ -193,7 +183,8 @@ player_type_data <- nba_players %>%
   
 ggplot(data=player_type_data, aes(x=player_type, y=pace_impact))+geom_violin() +
   labs(title = "Offensive and Two Way Players Play at a Faster Pace",
-  subtitle = " Compaired to Defensive and No Way Players")
+  subtitle = " Compaired to Defensive and No Way Players",
+  y = "Pace of Play Impact", x = "Player Type")
 
 
 
@@ -222,10 +213,10 @@ offense, but very lackluster defense. I would have expected his bad defense
 to even out his great offensive raptor, but it did not. His total raptor is 
 just over 5 points higher than the MVP Giannis Antetakounmpo.
 
-Graph 3: NEED TO EXPLAIN BC I DONT GET WAR THAT MUCH. Interesting things:
-Chris Paul had a negative total raptor but is very high WAR. 
-No negative WARs
-Russell with low WAR and neg raptor
+Graph 3: Graph three shows the WAR of all 15 members of the All-NBA teams. It is
+obvious who the league MVP was (Giannis Antetakounmpo) with a WAR well above 
+anyone else. What makes this graph interesting is that outside of Antetakounmpo.
+
 
 
 Graph 4: Graph three depicts the pace of play by player type. A defensive 
@@ -254,8 +245,6 @@ $H_1$: Better defensive players have the better mean WAR in the
 regular season and playoffs than average or below average defenders.
 
 ```{r war cor test}
-
-
 
 #linear model tests
 exp_war_reg <- lm(war_reg_season ~ raptor_defense + raptor_offense, 
@@ -287,21 +276,16 @@ ggplot(aug_reg, mapping = aes(x = .resid)) +
 ggplot(aug_reg, mapping = aes(sample = .resid)) +
   stat_qq() + 
   stat_qq_line()
-
-#exp_war_po <- lm(war_playoffs ~ raptor_defense + raptor_offense, 
-              #data = playoff_players)
-#tidy(exp_war_po)
 ```
 
 Expected regular season WAR = 1.70 + 0.142 * Defensive RAPTOR + 0.306 * 
 Offensive Raptor
 
-Expected playoff WAR = 0.470 + 0.104 * Defensive RAPTOR + 0.152 * Offensive 
-Raptor
-
 This means that offensive efficiency is actually more important to WAR (wins 
-above replacement) than defensive efficiency in both the regular season and 
-playoffs.
+above replacement) than defensive efficiency. The nature of the league has 
+definitely changed. Defense used to be the heart and soul of any NBA team, but
+now with such high scoring games, the importance of efficient offense seems to
+outweigh the importance of efficient defense. 
 
 ### 8: Offensive
 
@@ -341,51 +325,88 @@ impact on player possessions every 48 minutes.
 2. Do the players on the team's raptor total correlate to the teams winning
 percentage?
 
-```{r making data setex-2}
-team_data <- nba_players %>%
+```{r making data setex-2, message = FALSE, warning = FALSE}
+team_data_rap <- nba_players %>%
   select(team, team_win_pc, raptor_total) %>%
   group_by(team) %>%
-  summarise(mean(raptor_total))
+  summarise(avg_rap = mean(raptor_total))
 
-#team_win_pct_data <- nba_players %>%
- # select(team, team_win_pc) %>%
-  #group_by(team_win_pc)
+team_win_pct_data <- nba_players %>%
+  select(team) %>%
+  mutate(team_win_pc = case_when(
+    team == "MIL" ~ .767,
+    team == "TOR" ~ .736,
+    team == "BOS" ~ .667,
+    team == "IND" ~ .616,
+    team == "MIA" ~ .603,
+    team == "PHI" ~ .589,
+    team == "BRK" ~ .486,
+    team == "ORL" ~ .452,
+    team == "WAS" ~ .347,
+    team == "CHA" ~ .354,
+    team == "CHI" ~ .338,
+    team == "NYK" ~ .318,
+    team == "DET" ~ .303,
+    team == "ATL" ~ .299,
+    team == "CLE" ~ .292,
+    team == "LAL" ~ .732,
+    team == "LAC" ~ .681,
+    team == "DEN" ~ .630,
+    team == "HOU" ~ .611,
+    team == "OKC" ~ .611,
+    team == "UTA" ~ .611,
+    team == "DAL" ~ .573,
+    team == "POR" ~ .473,
+    team == "MEM" ~ .466,
+    team == "PHO" ~ .466,
+    team == "SAS" ~ .451,
+    team == "SAC" ~ .431,
+    team == "NOP" ~ .417,
+    team == "MIN" ~ .297,
+    team == "GSW" ~ .231
+  )) %>% 
+  distinct()
 
+team_data <- inner_join(team_data_rap, team_win_pct_data, by = "team")
 
+ggplot(data = team_data, aes(x = team_win_pc, y= avg_rap)) +geom_point() +
+  labs(title = "There are predominantly teams with negative avergae raptor",
+       subtitle = "Only five teams that fit the positive raptor, above .500 
+       winning percentage", 
+       y= "Average Raptor", x = "Team Winning Percantage")
+
+lm_team <- lm(team_win_pc ~ avg_rap, data = team_data)
+tidy(lm_team)
+
+aug_reg <- augment(lm_team)
+aug_reg %>%
+  slice(1:3)
+
+ggplot(aug_reg, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
+  labs(x = "Predicted Winning Percentage", y = "Residuals")
+
+ggplot(aug_reg, mapping = aes(x = .resid)) +
+  geom_histogram(bins = 15) + 
+  labs(x = "Residuals")
+
+ggplot(aug_reg, mapping = aes(sample = .resid)) +
+  stat_qq() + 
+  stat_qq_line()
 
 
 
 
 ```
 
-```{r ex-2}
+Expected team winning percentage = 0.52338 + 0.03233(team average raptor)
 
+For every single unit increase in team average raptor, it is expected there will
+be an increase in winning percentage of 3.23%.
 
-```
-
-
-
-
-
-
-
-
-
-
-
-
-There is a weak correlation between team total raptor and team winning percentage.
-
-### 10 Top Defensive Teams and Winning Percentage
-I am going to look at the mean team raptor defense for the 4 best teams in the
-NBA and the four worst teams in the NBA and see how they differ. (Then
-we should do the same with offense!!)
-
-
-```{r}
-data_for_ex_3 <- nba_players %>%
-  select(team, team_win_pc, raptor_defense)
-
-```
-
+We tested for equal variance and linearity first. Overall we observed a roughly
+linear and equal variance relationship in our data points. Next, we tested for
+normality using a QQ plot. This came out less fitting, but we realized there are
+only 30 data points so it is expected that the tests won't exactly fit. 
 
