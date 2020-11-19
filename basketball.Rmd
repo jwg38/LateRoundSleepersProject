@@ -37,9 +37,12 @@ season?
 possessions per 48 minutes as compared to players without offensive 
 capabilities?
 
-6. 
+6. Does the team's average raptor correlate to the teams average winning
+percentage?
 
-7. 
+7. Does the team's average war correlate to the teams average winning
+percentage?
+
 
 8. Which statistic, total raptor or total WAR, is better at indicicating player 
 success? 
@@ -381,10 +384,6 @@ impact on player possessions every 48 minutes.
 
 ### 9: Correlation- RaptorTotal and Winning Percentage
 
-2. Does the team's average total raptor correlate to the teams average winning
-percentage?
-
-
 ```{r making data setex-2, message = FALSE, warning = FALSE}
 team_data_rap <- nba_players %>%
   select(team, team_win_pc, raptor_total) %>%
@@ -553,6 +552,6 @@ for only 17 games last season, has a raptor 100 points over leauge MVP Giannis
 Antetokounmpo.
 
 
-### Discussion
 
+### Discussion
 This section is a conclusion and discussion. This will require a summary of what you have learned about your research question along with statistical arguments supporting your conclusions. Also, critique your own methods and provide suggestions for improving your analysis. Issues pertaining to the reliability and validity of your data and appropriateness of the statistical analysis should also be discussed here. A paragraph on what you would do differently if you were able to start over with the project or what you would do next if you were going to continue work on the project should also be included.
