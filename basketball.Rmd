@@ -92,35 +92,37 @@ glimpse(nba_players)
 
 # 4: Methodology
 
-The methodology section should include the variables used to address your 
-research question, as well as any useful visualizations or summary statistics. 
-As well, you should introduce and justify the statistical method(s) that you 
-believe will be useful in answering your research question.
-
-
 To start with, we looked at the placement of player offensive and defensive 
 capabilities by season type. To do this, we used the variables season_type, 
-raptor_offense, and raptor_defense and visualized the individual placements. 
+raptor_offense, and raptor_defense and visualized the individual placements.
 `season_type`:	Regular season (RS) or playoff (PO)
 
 In order to input the team winning percentage in the following section, we used 
-the following variable, 
+the following variable,
 `team`:	Basketball-Reference ID of team
+
+We analyzed the NBA on three different levels, firstly as a whole, secondly by 
+player type and thirdly by the All NBA teams of the best players in the game. 
+To visualize these analyses we used appropriate graph types such as a scatter 
+graph, pie charts, bar graph, box plots as well as a violin graph to 
+incorporate density. 
+
+Because the data set consisted of the entire NBA player population, we used 
+linear models to look at correlations and the effects of corresponding 
+variables on the response. 
 
 In the test for defensive players and WAR during different seasons, we chose to 
 use the linear model method to check for correlations of various corresponding 
-variables. 
+variables listed below, 
 `raptor_defense`:	Points above average per 100 possessions added by player on 
 defense, using both box and on-off components
 `raptor_offense`:	Points above average per 100 possessions added by player on 
 offense, using both box and on-off components
-
-
-`raptor_total`:	Points above average per 100 possessions added by player on both 
-offense and defense, using both box and on-off components
 `war_total`:	Wins Above Replacement between regular season and playoffs
 
-
+Further, we use a CLT based approach to test whether an offensive player has 
+more pace in a game, the variables above were used to achieve this. For this 
+method we made the assumption that the data was normally distributed.
 `pace_impact`:	Player impact on team possessions per 48 minutes
 
 
@@ -186,7 +188,7 @@ Citation: https://www.nba.com/standings
 ggplot(data = nba_players, aes(x = raptor_defense, y = raptor_offense)) +
   geom_point() + geom_hline(yintercept = 0, lwd = 1, col = "red", lty = 2) +
   geom_vline(xintercept = 0, lwd = 1, col = "red", lty = 2)+facet_wrap(~season_type) +
-  labs(title = "Distribution of NBA Players", 
+  labs(title = "G1: Distribution of NBA Players", 
        subtitle = "With the first quadrant being the target area for any player",
        y= "Offensive Raptor Grade", x = "Defensive Raptor Grade")
 
@@ -215,7 +217,7 @@ ggplot(data = all_nba, aes(x=factor(1), fill=player_type))+
   geom_bar(width = 1)+
   coord_polar("y") +
   labs(title = 
-         "Two-Way players have the highest representation on the All-NBA teams",
+         "G2: Two-Way players have the highest representation on the All-NBA teams",
        fill = "Player Type")+
   theme(axis.title.x=element_blank(),
         axis.ticks.x=element_blank(),
@@ -228,7 +230,7 @@ ggplot(data = nba_players, aes(x=factor(1), fill=player_type))+
   geom_bar(width = 1)+
   coord_polar("y") +
   labs(title = 
-         "Defensive and No-way Players make up the majority of the NBA",
+         "G3: Defensive and No-way Players make up the majority of the NBA",
        fill = "Player Type")+
   theme(axis.title.x=element_blank(),
         axis.ticks.x=element_blank(),
@@ -238,8 +240,12 @@ ggplot(data = nba_players, aes(x=factor(1), fill=player_type))+
   scale_fill_brewer("Blue") 
 
 ggplot(data = all_nba) + geom_bar(aes(player_name, raptor_total, 
-                                      fill = player_name, xaxt=FALSE), stat = "identity")+theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
-  labs(title = "Members of the All NBA Teams Total Raptor", 
+                                      fill = player_name, xaxt=FALSE), 
+                                  stat = "identity")+
+  theme(axis.title.x=element_blank(), 
+        axis.text.x=element_blank(), 
+        axis.ticks.x=element_blank()) +
+  labs(title = "G4: Members of the All NBA Teams Total Raptor", 
        y = "Total Raptor Grade",
        fill = "Player Name")
 
@@ -248,35 +254,34 @@ ggplot(data = all_nba) +
            stat = "identity")+theme(axis.title.x=element_blank(),
                                     axis.text.x=element_blank(), 
                                     axis.ticks.x=element_blank()) +
-  labs(title = "Members of the All NBA Teams' WAR",
+  labs(title = "G5: Members of the All NBA Teams' WAR",
        fill = "Player Name", y = "WAR")
 
 
 player_type_data <- nba_players %>%
-  filter(season_type == "RS")
+  filter(season_type == "RS", !is.na(war_reg_season))
   
-ggplot(data=player_type_data, aes(x=player_type, y=pace_impact))+geom_violin() +
-  labs(title = "Offensive and Two Way Players Play at a Faster Pace",
+ggplot(data=player_type_data, aes(x=player_type, y=pace_impact))+
+  geom_violin() +
+  labs(title = "G6: Offensive and Two Way Players Play at a Faster Pace",
   subtitle = " Compaired to Defensive and No Way Players",
   y = "Pace of Play Impact", x = "Player Type")
 
 
-ggplot(data=player_type_data) +
-  geom_col(aes(player_type, raptor_total, fill = player_type), 
-             stat = "identity") +
-  labs(title = "No Way player types have a terrible Raptor Total",
+ggplot(data=player_type_data, aes(x=player_type, y=raptor_total)) +
+  geom_boxplot(aes(color = player_type))+
+  labs(title = "G7: No Way player types have a terrible Raptor Total",
        subtitle = "While Two Way players have the highest Raptor Total",
-       fill = "Player Type",
+       color = "Player Type",
        x = "Player Type",
        y = "Raptor Total")
  
 
-ggplot(data=player_type_data) +
-  geom_col(aes(player_type, war_total, fill = player_type), 
-             stat = "identity") +
-  labs(title = "Two Way player types have a great War Total",
+ggplot(data=player_type_data, aes(x=player_type, y=war_total)) +
+  geom_boxplot(aes(color = player_type)) +
+  labs(title = "G8: Two Way player types have a great War Total",
        subtitle = "While No Way players have a negative War Total",
-       fill = "Player Type",
+       color = "Player Type",
        x = "Player Type",
        y = "War Total")
 
@@ -422,15 +427,11 @@ higher mean pace impact.
 
 Method: CLT-based approach
 
-### ALIYA KAMRAN, PLEASE SPELL OUT THESE HYPOTHESIS TESTS! NO = OR > SIGNS. WHAT IS MEANT BY "COULD BE" DEFENSIVE?
+$H_0$: Mean pace_impact when player has offensive capabilities = mean 
+pace_impact when player cannot play offensively. 
 
-$H_0$: Mean pace_impact when player can play offensive ("Offensive" or "Two-way)
-= mean pace_impact when player cannot play offensive but could be "Defensive", 
-or "No Way".
-
-$H_1$: Mean pace_impact when player can play offensive 
-("Offensive" or "Two-way) > mean pace_impact when player cannot play offensive 
-but could be "Defensive", or "No Way".
+$H_1$: Mean pace_impact when player has offensive capabilities is greater than 
+mean pace_impact when player cannot play offensively.
 
 $/alpha$=0.05
 
@@ -445,12 +446,16 @@ t.test(pace_impact ~ offense,
        conf.level = 0.95)
 ```
 
-
 Since our P-value of 0.6016 is greater than the alpha level of 0.05, we fail to 
-reject the null hypothesis. Since we conducted this test on the total population, we 
-can say that being able to play offensively does not lend to having a higher
-impact on player possessions every 48 minutes. 
+reject the null hypothesis. Since we conducted this test on the total 
+population of all NBA players, we can say that being able to play offensively 
+does not lend to having a higher impact on player possessions every 48 minutes. 
 
+The t-test is a tool to test as assumption for the population, and since the 
+data set already contains the population, we can say with greater certainty 
+that the above implication holds. Since the population is constantly changing 
+in the NBA, it would still be valuable to look at this test despite the 
+limitations. 
 
 ### 9: Correlation- RaptorTotal and Winning Percentage
 
@@ -622,8 +627,6 @@ anomalies, and the best players clearly do not have the highest raptors. This
 is clearest when noticing that Alize Johnson, who average 6.9 minuets per game
 for only 17 games last season, has a raptor 100 points higher than leauge MVP Giannis
 Antetokounmpo.
-
-
 
 ### Discussion
 This section is a conclusion and discussion. This will require a summary of what you have learned about your research question along with statistical arguments supporting your conclusions. Also, critique your own methods and provide suggestions for improving your analysis. Issues pertaining to the reliability and validity of your data and appropriateness of the statistical analysis should also be discussed here. A paragraph on what you would do differently if you were able to start over with the project or what you would do next if you were going to continue work on the project should also be included.
