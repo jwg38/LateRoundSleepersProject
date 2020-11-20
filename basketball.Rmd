@@ -211,6 +211,32 @@ all_nba <- nba_players %>%
 all_nba <- all_nba %>% 
   filter(season_type== "RS")
 
+ggplot(data = all_nba, aes(x=factor(1), fill=player_type))+
+  geom_bar(width = 1)+
+  coord_polar("y") +
+  labs(title = 
+         "Two-Way players have the highest representation on the All-NBA teams",
+       fill = "Player Type")+
+  theme(axis.title.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(), 
+        axis.ticks.y=element_blank())+
+  scale_fill_brewer("Blue")
+
+ggplot(data = nba_players, aes(x=factor(1), fill=player_type))+
+  geom_bar(width = 1)+
+  coord_polar("y") +
+  labs(title = 
+         "Defensive and No-way Players make up the majority of the NBA",
+       fill = "Player Type")+
+  theme(axis.title.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(), 
+        axis.ticks.y=element_blank()) +
+  scale_fill_brewer("Blue") 
+
 ggplot(data = all_nba) + geom_bar(aes(player_name, raptor_total, 
                                       fill = player_name, xaxt=FALSE), stat = "identity")+theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
   labs(title = "Members of the All NBA Teams Total Raptor", 
@@ -236,7 +262,7 @@ ggplot(data=player_type_data, aes(x=player_type, y=pace_impact))+geom_violin() +
 
 
 ggplot(data=player_type_data) +
-  geom_bar(aes(player_type, raptor_total, fill = player_type), 
+  geom_col(aes(player_type, raptor_total, fill = player_type), 
              stat = "identity") +
   labs(title = "No Way player types have a terrible Raptor Total",
        subtitle = "While Two Way players have the highest Raptor Total",
@@ -246,7 +272,7 @@ ggplot(data=player_type_data) +
  
 
 ggplot(data=player_type_data) +
-  geom_bar(aes(player_type, war_total, fill = player_type), 
+  geom_col(aes(player_type, war_total, fill = player_type), 
              stat = "identity") +
   labs(title = "Two Way player types have a great War Total",
        subtitle = "While No Way players have a negative War Total",
@@ -265,7 +291,17 @@ seems to be more outliers in it. In both graphs, there looks to be a large
 clump at the axis, meaning that the majority of the NBA has both an offensive 
 and defensive raptor around zero. 
 
-Graph 2: Graph two depicts the member of the three All NBA Teams and their 
+Graphs 2 and 3: In the second and third graphs, we look at the breakdown of
+player types by the All-NBA teams and the entire NBA. The first pie chart looks
+at the 15 All-NBA players, where Two-Way players dominate (8/15). In comparison,
+the pie chart of the entire NBA shows that Two-Way players nearly have the
+smallest proportional representation. What this signifies is that Two-way players
+are a more "elite" breed and find more success in the NBA being elite a both
+ends of the floor. Defensive players have a small representation of All-NBA
+players, yet the most of any type in the NBA, so that signifies the difficulty
+of being the best in the league as a Defensive-type player. 
+
+Graph 4: Graph two depicts the member of the three All NBA Teams and their 
 total raptors. It is interesting to see that only one player who was
 awarded this honor had a negative total raptor, Russel Westbrook. Russell
 Westbrook was a member of the All NBA Third Team, so if any All NBA player
@@ -277,7 +313,7 @@ but it did not, which speaks to the changing nature of the league, which values
 offense. His total raptor is just over 5 points higher than the MVP Giannis 
 Antetakounmpo.
 
-Graph 3: Graph three shows the WAR of all 15 members of the All-NBA teams. It is
+Graph 5: Graph three shows the WAR of all 15 members of the All-NBA teams. It is
 not obvious who the league MVP was (Giannis Antetakounmpo), due to the fact
 that James Harden is towering above everyone else. Harden finished 3rd in
 league MVP voting, which is peculiar because based on this metric, he would
@@ -287,7 +323,7 @@ other All-NBA players. This, combined with Graph 2, raises the question of why
 Antetakounmpo was MVP instead of Harden?
 
 
-Graph 4: Graph three depicts the pace of play by player type. A defensive 
+Graph 6: Graph three depicts the pace of play by player type. A defensive 
 player is a player with a good defensive raptor, an offensive player has a 
 good offensive raptor, a no way player is not great at either, and a two
 way player has a good offensive and defensive raptor. The offensive and two
@@ -300,14 +336,14 @@ There are a few No-way players and Two-way players that greatly separate
 themselves from their respective trends. This can be explained as outliers who
 played few minutes over the course of the season.
 
-Graph 5: When looking at the total raptor for each type of player, we notice
+Graph 7: When looking at the total raptor for each type of player, we notice
 that the no way players have a incredibly low raptor total. This makes sense, but
 visualizing it makes it much more clear how low their total raptor really is.
 It also effectively shows how important two way players are, as they had the
 highest total raptor. In addition, it is interesting to note that defensive
 players had a higher total raptor than offensive players.
 
-Graph 6: While looking into the total war for each type of player, we notice
+Graph 8: While looking into the total war for each type of player, we notice
 that the two way players have a wildly high war total. This is because WAR takes
 into account a player's effect on the team on both offense and defense, so two-
 way players generate higher WARs typically becuase they are excel on both ends
