@@ -73,9 +73,12 @@ variables:
 `team`:	Basketball-Reference ID of team
 `poss`:	Possessions played
 `mp`:	Minutes played
-`raptor_offense`:	Points above average per 100 possessions added by player on offense, using both box and on-off components
-`raptor_defense`:	Points above average per 100 possessions added by player on defense, using both box and on-off components
-`raptor_total`:	Points above average per 100 possessions added by player on both offense and defense, using both box and on-off components
+`raptor_offense`:	Points above average per 100 possessions added by player on 
+offense, using both box and on-off components
+`raptor_defense`:	Points above average per 100 possessions added by player on 
+defense, using both box and on-off components
+`raptor_total`:	Points above average per 100 possessions added by player on both 
+offense and defense, using both box and on-off components
 `war_total`:	Wins Above Replacement between regular season and playoffs
 `war_reg_season`:	Wins Above Replacement for regular season
 `war_playoffs`:	Wins Above Replacement for playoffs
@@ -95,19 +98,26 @@ As well, you should introduce and justify the statistical method(s) that you
 believe will be useful in answering your research question.
 
 
-To start with, we looked at the placement of player offensive and defensive capabilities by season type. To do this, we used the variables season_type, raptor_offense, and raptor_defense and visualized the individual placements. 
+To start with, we looked at the placement of player offensive and defensive 
+capabilities by season type. To do this, we used the variables season_type, 
+raptor_offense, and raptor_defense and visualized the individual placements. 
 `season_type`:	Regular season (RS) or playoff (PO)
 
-In order to input the team winning percentage in the following section, we used the following variable, 
+In order to input the team winning percentage in the following section, we used 
+the following variable, 
 `team`:	Basketball-Reference ID of team
 
 In the test for defensive players and WAR during different seasons, we chose to 
-use the linear model method to check for correlations of various corresponding variables. 
-`raptor_defense`:	Points above average per 100 possessions added by player on defense, using both box and on-off components
-`raptor_offense`:	Points above average per 100 possessions added by player on offense, using both box and on-off components
+use the linear model method to check for correlations of various corresponding 
+variables. 
+`raptor_defense`:	Points above average per 100 possessions added by player on 
+defense, using both box and on-off components
+`raptor_offense`:	Points above average per 100 possessions added by player on 
+offense, using both box and on-off components
 
 
-`raptor_total`:	Points above average per 100 possessions added by player on both offense and defense, using both box and on-off components
+`raptor_total`:	Points above average per 100 possessions added by player on both 
+offense and defense, using both box and on-off components
 `war_total`:	Wins Above Replacement between regular season and playoffs
 
 
@@ -117,6 +127,9 @@ use the linear model method to check for correlations of various corresponding v
 ### Creating telling variables and cleaning data
 
 ```{r variables, echo = FALSE}
+nba_players <- nba_players %>%
+  filter(!is.na(war_total))
+
 nba_players <- nba_players %>% 
   mutate(player_type = case_when(raptor_offense > 0 & raptor_defense > 0 ~ 
                                    "Two-way",
@@ -214,7 +227,7 @@ ggplot(data = all_nba) +
 
 
 player_type_data <- nba_players %>%
-  filter(player_type != "NA")
+  filter(season_type == "RS")
   
 ggplot(data=player_type_data, aes(x=player_type, y=pace_impact))+geom_violin() +
   labs(title = "Offensive and Two Way Players Play at a Faster Pace",
@@ -256,26 +269,36 @@ Graph 2: Graph two depicts the member of the three All NBA Teams and their
 total raptors. It is interesting to see that only one player who was
 awarded this honor had a negative total raptor, Russel Westbrook. Russell
 Westbrook was a member of the All NBA Third Team, so if any All NBA player
-would have negative total raptor it makes sense that it is him. It is also interesting to 
-notice that James Harden had the highest total raptor, because he is a player
-known for his incredible offense, but very lackluster defense. I would have 
-expected his bad defense to even out his great offensive raptor, but it did not.
-His total raptor is just over 5 points higher than the MVP Giannis 
+would have negative total raptor it makes sense that it is him. It is also 
+interesting to notice that James Harden had the highest total raptor, because 
+he is a player known for his incredible offense, but very lackluster defense. 
+I would have expected his bad defense to even out his great offensive raptor, 
+but it did not, which speaks to the changing nature of the league, which values
+offense. His total raptor is just over 5 points higher than the MVP Giannis 
 Antetakounmpo.
 
 Graph 3: Graph three shows the WAR of all 15 members of the All-NBA teams. It is
-obvious who the league MVP was (Giannis Antetakounmpo) with a WAR well above 
-### anyone else. What makes this graph interesting is that outside of Antetakounmpo.(WHATS GOING ON HERE???)
+not obvious who the league MVP was (Giannis Antetakounmpo), due to the fact
+that James Harden is towering above everyone else. Harden finished 3rd in
+league MVP voting, which is peculiar because based on this metric, he would
+have been by far the most valuable to lose. Antetakounmpo on the other hand,
+barely reaches the title of second highest and could easily be mixed up among
+other All-NBA players. This, combined with Graph 2, raises the question of why
+Antetakounmpo was MVP instead of Harden?
+
 
 Graph 4: Graph three depicts the pace of play by player type. A defensive 
-player is a player with a good defensive raptor, an offensive player has a good offensive raptor, a no way player is not
-great at either, and a two
+player is a player with a good defensive raptor, an offensive player has a 
+good offensive raptor, a no way player is not great at either, and a two
 way player has a good offensive and defensive raptor. The offensive and two
 way players often look to score and play at a fast pace, which this violin
-### plot clearly shows(EXPLAIN HOW THIS IS CLEARLY SHOWN USING CHART). The defensive players want to slow the game down and
-force the offensive player to be uncomfortable and play slowly. The no way
-players are often role players, meaning that they do not affect the pace
-of the game enough to make it much faster.
+plot clearly shows due to the larger influx of those players above the 0.0 line. 
+The defensive players want to slow the game down and force the offensive player 
+to be uncomfortable and play slowly. The no way players are often role players, 
+meaning that they do not affect the pace of the game enough to make it much faster.
+There are a few No-way players and Two-way players that greatly separate 
+themselves from their respective trends. This can be explained as outliers who
+played few minutes over the course of the season.
 
 Graph 5: When looking at the total raptor for each type of player, we notice
 that the no way players have a incredibly low raptor total. This makes sense, but
@@ -285,25 +308,16 @@ highest total raptor. In addition, it is interesting to note that defensive
 players had a higher total raptor than offensive players.
 
 Graph 6: While looking into the total war for each type of player, we notice
-### that the two way players have a wildly high war total. This is because ....(FIX THIS RIGHT HERE!)
-In addition, the no way players have a negative war total. The stark comparison
-between the two players types is shocking when visualized. Offensive and 
-defensive players have a very close total war value, with defensive players
-slightly ahead.
+that the two way players have a wildly high war total. This is because WAR takes
+into account a player's effect on the team on both offense and defense, so two-
+way players generate higher WARs typically becuase they are excel on both ends
+of the floor. In addition, the no way players have a negative war total because
+their impact on the game actually hurts their teams.The stark comparison between 
+the two players types is shocking when visualized. Offensive and defensive players 
+have a very close total war value, with defensive players slightly ahead.
 
 
-### 7: Defense
-
-1. Testing if better defensive players have a better WAR in the 
-playoffs and regular season.
-
-### ALEX, LOOK AT THE GGPLOT IN THIS R CHUNK AND FIX IT!!!
-
-$H_0$: Better defensive players have the same mean WAR in the regular
-season and playoffs as average or below average defenders.
-
-$H_1$: Better defensive players have the better mean WAR in the 
-regular season and playoffs than average or below average defenders.
+### 7: Which is more effictive on WAR, offense or defense?
 
 ```{r war-cor-test}
 
@@ -318,16 +332,10 @@ aug_reg <- augment(exp_war_reg)
 aug_reg %>%
   slice(1:3)
 
-#ggplot(data = aug_reg, 
-       #aes(x = 1:nrow(nba_players), 
-           #y = .resid)) + 
-  #geom_point() + 
-  #labs(x = "Index", y = "Residual")
-
 ggplot(aug_reg, mapping = aes(x = .fitted, y = .resid)) +
   geom_point() + 
   geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
-  labs(x = "Predicted Price", y = "Residuals")
+  labs(x = "Predicted WAR", y = "Residuals")
 
 ggplot(aug_reg, mapping = aes(x = .resid)) +
   geom_histogram(bins = 15) + 
@@ -340,19 +348,34 @@ ggplot(aug_reg, mapping = aes(sample = .resid)) +
 ## R^2 value
 glance(exp_war_reg)$r.squared
 
-```
+nba_players %>% 
+  summarise(cor_offense = cor(war_reg_season, raptor_offense))
 
-Expected regular season WAR = 1.70 + 0.142 * Defensive RAPTOR + 0.306 * 
+nba_players %>% 
+  summarise(cor_defense = cor(war_reg_season, raptor_defense))
+
+```
+We would love to look at the relationship between a players WAR and their
+offense and defensive raptor grades, but they are just not that connected.
+In the linear model test we conducted, the results were as follows:
+
+Expected regular season WAR = 1.02 + 0.026 * Defensive RAPTOR + 0.125 * 
 Offensive Raptor
 
 This means that offensive efficiency is actually more important to WAR (wins 
 above replacement) than defensive efficiency. The nature of the league has 
-definitely changed. Defense used to be the most critical element of winning a game, but
-now with such high scoring games, the importance of efficient offense seems to
-outweigh the importance of efficient defense. 
+definitely changed. Defense used to be the most critical element of winning a 
+game, but now with such high scoring games, the importance of efficient offense 
+seems to outweigh the importance of efficient defense.
 
-Roughly 9.4% of the variability in WAR of players can be explained by raptor
-offense and raptor defense for the regular season.
+This analyses above isn't entirely wrong. After performing two correlation tests,
+we found that offensive raptor was more highly correlated with WAR than defesive
+raptor. The issue is that our tests for linearity, equal variance and normality
+all came back very concerning. Additionally, the R-squared showed that roughly 
+only 9.4% of the variability in WAR of players can be explained by raptor
+offense and raptor defense for the regular season. This reveals that despite the
+linear model producing believable results, it's not entirely predictive and should
+be used with caution. 
 
 
 
@@ -531,7 +554,9 @@ to the win percentage is understandable.
 We tested for equal variance and linearity first. Overall we observed a roughly
 linear and equal variance relationship in our data points. Next, we tested for
 normality using a QQ plot. This came out less fitting than the raptor test, but 
-the normality is close enough to pass the test.
+the normality is close enough to pass the test. With only 30 datapoints, it is
+hard to tell an exact fit from these tests, so the overall linear model should
+be used with slight caution.
 
 ### 11 Comparing WAR and Raptor Values
 
