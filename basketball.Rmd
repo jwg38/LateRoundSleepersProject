@@ -241,7 +241,6 @@ ggplot(data=player_type_data) +
        x = "Player Type",
        y = "War Total")
 
-
 ```
 
 Explanations:
@@ -304,7 +303,7 @@ season and playoffs as average or below average defenders.
 $H_1$: Better defensive players have the better mean WAR in the 
 regular season and playoffs than average or below average defenders.
 
-```{r war cor test}
+```{r war-cor-test}
 
 #linear model tests
 exp_war_reg <- lm(war_reg_season ~ raptor_defense + raptor_offense, 
@@ -312,7 +311,6 @@ exp_war_reg <- lm(war_reg_season ~ raptor_defense + raptor_offense,
 tidy(exp_war_reg)
 
 #Conditions test
-
 
 aug_reg <- augment(exp_war_reg)
 aug_reg %>%
@@ -336,6 +334,10 @@ ggplot(aug_reg, mapping = aes(x = .resid)) +
 ggplot(aug_reg, mapping = aes(sample = .resid)) +
   stat_qq() + 
   stat_qq_line()
+
+## R^2 value
+glance(exp_war_reg)$r.squared
+
 ```
 
 Expected regular season WAR = 1.70 + 0.142 * Defensive RAPTOR + 0.306 * 
@@ -346,6 +348,11 @@ above replacement) than defensive efficiency. The nature of the league has
 definitely changed. Defense used to be the heart and soul of any NBA team, but
 now with such high scoring games, the importance of efficient offense seems to
 outweigh the importance of efficient defense. 
+
+Roughly 9.4% of the variability in WAR of players can be explained by raptor
+offense and raptor defense for the regular season.
+
+
 
 ### 8: Offensive
 
