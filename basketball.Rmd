@@ -11,15 +11,15 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE)
 
 # 1: Introduction
 
-We are investigating what makes NBA players successful in context of their team 
-play. The reason for choosing this study is that are all NBA fans and eager to 
-apply our new knowledge of data science to the game will allow us to have a 
-better understanding for the game and make us more informed viewers. 
+We are investigating what makes NBA players successful in the context of team 
+play. Our reason for choosing this topic of study is that are all NBA fans and eager to 
+apply our new knowledge of data science to the game which will allow us to have a 
+better understanding of the game and make us more informed viewers. 
 Furthermore, basketball statistics are fairly new and it will be interesting to 
 discover if our perceived notions of certain players match the statistical data. 
 
-In particular, we defined our investigation of "success" of NBA players and team
-on the following hypothesis tests and questions:
+In particular, we define the "success" of NBA players and their teams
+based on the following hypothesis tests and questions:
 
 1. Does the average offensive and defensive raptor for players differ between 
 the regular season and post season?
@@ -27,24 +27,24 @@ the regular season and post season?
 2. Does the average raptor differ greatly from the average WAR between members 
 of the All NBA teams?
 
-3. How are the variables pace impact, raptor total and war total impacted by 
+3. How are the variables pace impact, raptor total, and WAR total impacted by 
 player type?
 
-4. Do better defensive players have a better WAR in the playoffs and regular 
+4. Do better defensive players have a better WAR in the playoffs than the regular 
 season?
 
-5. Do players with offensive capabilities have greater impact on team 
+5. Do players with better offensive capabilities have greater impact on team 
 possessions per 48 minutes as compared to players without offensive 
 capabilities?
 
-6. Does the team's average raptor correlate to the teams average winning
+6. Does the team's average raptor correlate to the team's average winning
 percentage?
 
-7. Does the team's average war correlate to the teams average winning
+7. Does the team's average WAR correlate to the team's average winning
 percentage?
 
 
-8. Which statistic, total raptor or total WAR, is better at indicicating player 
+8. Which statistic, total raptor or total WAR, is better at indicating player 
 success? 
 
 Sources:
@@ -58,14 +58,14 @@ library(tidyverse)
 nba_players <- read.csv("https://projects.fivethirtyeight.com/nba-model/2020/latest_RAPTOR_by_team.csv")
 ```
 
-We are exploring the NBA-Raptor data set. Raptor is a player efficiency rating 
-system.This data set has tracked multiple team and player analysis over a six 
-year period. Each observation is an NBA player with variables about their 
-statistics. It has variables such as players points per game, team winning 
-percentage, average team possessions per game, and many more. The player data
-is stats from every NBA games since 2014. Raptor was made by Fivethirtyeight. 
-
-The data set has 808 observatios and 23 variables with the investigation focusing on the following variables:
+We are exploring the NBA-Raptor data set produced by Fivethirtyeight. Raptor is 
+a player efficiency rating system. This data set has tracked multiple team and 
+player analyses over a six year period. Each observation is an NBA player with 
+their statistics as variables. It has variables such as players points per game, 
+team winning percentage, average team possessions per game, and many more. The 
+player data is stats from every NBA games since 2014. The data set has 808 
+observations and 23 variables with the investigation focusing on the following 
+variables:
 
 `player_name`:	Player name
 `season`:	Season
@@ -95,7 +95,7 @@ As well, you should introduce and justify the statistical method(s) that you
 believe will be useful in answering your research question.
 
 
-To start with, we looked at the placement of player offensive and defensive capabilities by season type. To do this, we used the variables season_type, raptor_offense and raptor_defense and visualized the individual placements. 
+To start with, we looked at the placement of player offensive and defensive capabilities by season type. To do this, we used the variables season_type, raptor_offense, and raptor_defense and visualized the individual placements. 
 `season_type`:	Regular season (RS) or playoff (PO)
 
 In order to input the team winning percentage in the following section, we used the following variable, 
@@ -161,7 +161,7 @@ nba_players <- nba_players %>%
 
 Added the following variables to our dataset:
 
-`player_type`: categorizing the player as offensive, defensive etc.
+`player_type`: categorizing the player as offensive, defensive, etc.
 
 `team_win_pc`: gives each player their associated win percentage. 
 Citation: https://www.nba.com/standings
@@ -245,18 +245,18 @@ ggplot(data=player_type_data) +
 
 Explanations:
 
-Graph 1: Graph one shows the distribution of NBA players comparing both their 
+Graph 1: Graph one shows the distribution of NBA players, comparing both their 
 offensive and defensive raptor. Each point represents one player and their 
-raptors. The first graph shows the players in this years playoffs, and there
+raptors. The first graph shows the players in this year's playoffs, and there
 seems to be more outliers in it. In both graphs, there looks to be a large 
-clump at the axis, meaning that the majority of the NBA has both an offensize 
+clump at the axis, meaning that the majority of the NBA has both an offensive 
 and defensive raptor around zero. 
 
-Graph 2: Graph two depicts the member of the three all NBA Teams and their 
-total raptors. It is interesting to see that only one player was
-awarded this honor had a negative total raptor, being Russel Westbrook. Russell
-Westbrook was a member of the All NBA Third Team, so if any player
-would have negative total raptors it would be him. It is also interesting to 
+Graph 2: Graph two depicts the member of the three All NBA Teams and their 
+total raptors. It is interesting to see that only one player who was
+awarded this honor had a negative total raptor, Russel Westbrook. Russell
+Westbrook was a member of the All NBA Third Team, so if any All NBA player
+would have negative total raptor it makes sense that it is him. It is also interesting to 
 notice that James Harden had the highest total raptor, because he is a player
 known for his incredible offense, but very lackluster defense. I would have 
 expected his bad defense to even out his great offensive raptor, but it did not.
@@ -265,37 +265,39 @@ Antetakounmpo.
 
 Graph 3: Graph three shows the WAR of all 15 members of the All-NBA teams. It is
 obvious who the league MVP was (Giannis Antetakounmpo) with a WAR well above 
-anyone else. What makes this graph interesting is that outside of Antetakounmpo.
+### anyone else. What makes this graph interesting is that outside of Antetakounmpo.(WHATS GOING ON HERE???)
 
 Graph 4: Graph three depicts the pace of play by player type. A defensive 
-player is a player with a good defensive raptor, a no way player is not
-great at either, an offensive player has a good offensive raptor, and a two
+player is a player with a good defensive raptor, an offensive player has a good offensive raptor, a no way player is not
+great at either, and a two
 way player has a good offensive and defensive raptor. The offensive and two
 way players often look to score and play at a fast pace, which this violin
-plot clearly shows. The defensive players want to slow the game down and
-force the offensive player to be uncomfortable and play slow. The no way
+### plot clearly shows(EXPLAIN HOW THIS IS CLEARLY SHOWN USING CHART). The defensive players want to slow the game down and
+force the offensive player to be uncomfortable and play slowly. The no way
 players are often role players, meaning that they do not affect the pace
 of the game enough to make it much faster.
 
-Graph 5: While looking into the total raptor for each type of player, we notice
-that the no way players have a horrible raptor total. This makes sense, but
-visualizing it makes it so much more clear how bad their total raptor really is.
+Graph 5: When looking at the total raptor for each type of player, we notice
+that the no way players have a incredibly low raptor total. This makes sense, but
+visualizing it makes it much more clear how low their total raptor really is.
 It also effectively shows how important two way players are, as they had the
 highest total raptor. In addition, it is interesting to note that defensive
 players had a higher total raptor than offensive players.
 
 Graph 6: While looking into the total war for each type of player, we notice
-that the two way players have a fantastic war total. This is because ....
+### that the two way players have a wildly high war total. This is because ....(FIX THIS RIGHT HERE!)
 In addition, the no way players have a negative war total. The stark comparison
 between the two players types is shocking when visualized. Offensive and 
-defensive players have a very close total war value, with the defensive players
-edging them out.
+defensive players have a very close total war value, with defensive players
+slightly ahead.
 
 
 ### 7: Defense
 
 1. Testing if better defensive players have a better WAR in the 
 playoffs and regular season.
+
+### ALEX, LOOK AT THE GGPLOT IN THIS R CHUNK AND FIX IT!!!
 
 $H_0$: Better defensive players have the same mean WAR in the regular
 season and playoffs as average or below average defenders.
@@ -345,7 +347,7 @@ Offensive Raptor
 
 This means that offensive efficiency is actually more important to WAR (wins 
 above replacement) than defensive efficiency. The nature of the league has 
-definitely changed. Defense used to be the heart and soul of any NBA team, but
+definitely changed. Defense used to be the most critical element of winning a game, but
 now with such high scoring games, the importance of efficient offense seems to
 outweigh the importance of efficient defense. 
 
@@ -360,6 +362,8 @@ offense and raptor defense for the regular season.
 higher mean pace impact.
 
 Method: CLT-based approach
+
+### ALIYA KAMRAN, PLEASE SPELL OUT THESE HYPOTHESIS TESTS! NO = OR > SIGNS. WHAT IS MEANT BY "COULD BE" DEFENSIVE?
 
 $H_0$: Mean pace_impact when player can play offensive ("Offensive" or "Two-way)
 = mean pace_impact when player cannot play offensive but could be "Defensive", 
@@ -384,7 +388,7 @@ t.test(pace_impact ~ offense,
 
 
 Since our P-value of 0.6016 is greater than the alpha level of 0.05, we fail to 
-reject the null hypothesis. Since we conducted this test on our population, we 
+reject the null hypothesis. Since we conducted this test on the total population, we 
 can say that being able to play offensively does not lend to having a higher
 impact on player possessions every 48 minutes. 
 
@@ -518,16 +522,16 @@ ggplot(aug_war, mapping = aes(sample = .resid)) +
 
 Expected team winning percentage = 0.2012 + 0.3326(team average raptor)
 
-For every single unit increase in team average war, it is expected there will
+For every single unit increase in team average WAR, it is expected there will
 be an increase in winning percentage of 33.26%. The large increase of win
-percentage is due to the fact that the team average Wars are very small and 
+percentage is due to the fact that the team average WARs are very small and 
 very similar, a one point jump would create an outlier, so the 33% increase
-to the win percentage is justified.
+to the win percentage is understandable.
 
 We tested for equal variance and linearity first. Overall we observed a roughly
 linear and equal variance relationship in our data points. Next, we tested for
 normality using a QQ plot. This came out less fitting than the raptor test, but 
-the normality is good enough to make it accurate.
+the normality is close enough to pass the test.
 
 ### 11 Comparing WAR and Raptor Values
 
@@ -545,17 +549,17 @@ nba_players %>%
   slice(1:10)
 ````
 
-This simple look into the players with the top 10 highest Total Raptors and 
-Total Wars says a lot about each variable. The top 10 players in terms of War
-are household names and allstars. They are some of the best players in the NBA.
+This simple test looks at the players with the top 10 highest Total Raptors and 
+Total WARs and says a lot about each variable. The top 10 players in terms of WAR
+are all household names and allstars. They are some of the best players in the NBA.
 Conversely, the top 10 players in terms of Raptor are random players. This being
-the case, I would argue that War is a more accurate variable whenever looking 
-for the best players. War shows the players that are more important to a teams
+the case, I would argue that WAR is a more accurate variable whenever looking 
+for the best players. WAR shows the players that are more important to a team's
 win above replacement, meaning that the best players would have the highest 
-war. In contrast, the players with the highest raptors could be statistical
+WAR. In contrast, the players with the highest raptors could be statistical
 anomalies, and the best players clearly do not have the highest raptors. This
 is clearest when noticing that Alize Johnson, who average 6.9 minuets per game
-for only 17 games last season, has a raptor 100 points over leauge MVP Giannis
+for only 17 games last season, has a raptor 100 points higher than leauge MVP Giannis
 Antetokounmpo.
 
 
