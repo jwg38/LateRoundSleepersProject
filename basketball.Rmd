@@ -84,7 +84,7 @@ offense and defense, using both box and on-off components
 `war_playoffs`:	Wins Above Replacement for playoffs
 `pace_impact`:	Player impact on team possessions per 48 minutes
 
-## 3: Glimpse of data
+# 3: Glimpse of data
 
 ```{r glimpse}
 glimpse(nba_players)
@@ -140,6 +140,7 @@ and compared them to find possible similarities.
 
 ### Creating telling variables and cleaning data
 
+
 ```{r variables, echo = FALSE}
 nba_players <- nba_players %>%
   filter(!is.na(war_total))
@@ -193,7 +194,9 @@ Added the following variables to our dataset:
 `team_win_pc`: gives each player their associated win percentage. 
 Citation: https://www.nba.com/standings
 
-### Interpreting results from visualizations
+
+# 5: Testing, results and visualizations
+
 
 ```{r visualization}
 #raptor visualization
@@ -228,17 +231,18 @@ all_nba <- all_nba %>%
 ggplot(data = all_nba, aes(x=factor(1), fill=player_type))+
   geom_bar(width = 1)+
   coord_polar("y") +
-  labs(title = 
-         "G2: Two-Way players have the highest representation on the All-NBA 
-       teams",
+  labs(title =  "G2: Two-Way players have the highest representation 
+  on the All-NBA teams",
        fill = "Player Type")+
   theme(axis.title.x=element_blank(),
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(), 
-        axis.ticks.y=element_blank())+
-  scale_fill_brewer("Blue")
+        axis.ticks.y=element_blank())
 
+```
+
+```{r pie chart fix}
 ggplot(data = nba_players, aes(x=factor(1), fill=player_type))+
   geom_bar(width = 1)+
   coord_polar("y") +
@@ -249,9 +253,11 @@ ggplot(data = nba_players, aes(x=factor(1), fill=player_type))+
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(), 
-        axis.ticks.y=element_blank()) +
-  scale_fill_brewer("Blue") 
+        axis.ticks.y=element_blank())  
 
+```
+
+```{r vis. cont.}
 ggplot(data = all_nba) + geom_bar(aes(player_name, raptor_total, 
                                       fill = player_name, xaxt=FALSE), 
                                   stat = "identity")+
@@ -371,7 +377,7 @@ the two players types is shocking when visualized. Offensive and defensive playe
 have a very close total war value, with defensive players slightly ahead.
 
 
-### 7: Which is more effective on WAR, offense or defense?
+### Which is more effective on WAR, offense or defense?
 
 ```{r war-cor-test}
 
@@ -389,15 +395,18 @@ aug_reg %>%
 ggplot(aug_reg, mapping = aes(x = .fitted, y = .resid)) +
   geom_point() + 
   geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
-  labs(x = "Predicted WAR", y = "Residuals")
+  labs(tile = "Equal variance and linearity test",
+       x = "Predicted WAR", y = "Residuals")
 
 ggplot(aug_reg, mapping = aes(x = .resid)) +
   geom_histogram(bins = 15) + 
-  labs(x = "Residuals")
+  labs(x = "Residuals")+
+  labs(title= "Normality test")
 
 ggplot(aug_reg, mapping = aes(sample = .resid)) +
   stat_qq() + 
-  stat_qq_line()
+  stat_qq_line() +
+  labs(title = "Normality test")
 
 ## R^2 value
 glance(exp_war_reg)$r.squared
@@ -433,7 +442,7 @@ be used with caution.
 
 
 
-### 8: Offensive
+### Offensive
 
 1. Testing to see whether a player who has a positive offensive raptor has a 
 higher mean pace impact.
@@ -470,7 +479,7 @@ that the above implication holds. Since the population is constantly changing
 in the NBA, it would still be valuable to look at this test despite the 
 limitations. 
 
-### 9: Correlation- RaptorTotal and Winning Percentage
+### Correlation- RaptorTotal and Winning Percentage
 
 ```{r making data setex-2, message = FALSE, warning = FALSE}
 team_data_rap <- nba_players %>%
@@ -533,15 +542,17 @@ aug_reg %>%
 ggplot(aug_reg, mapping = aes(x = .fitted, y = .resid)) +
   geom_point() + 
   geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
-  labs(x = "Predicted Winning Percentage", y = "Residuals")
+  labs(title = "Equal variance and Linearity test", 
+       x = "Predicted Winning Percentage", y = "Residuals")
 
 ggplot(aug_reg, mapping = aes(x = .resid)) +
   geom_histogram(bins = 15) + 
-  labs(x = "Residuals")
+  labs(title = "Normality test", x = "Residuals")
 
 ggplot(aug_reg, mapping = aes(sample = .resid)) +
   stat_qq() + 
-  stat_qq_line()
+  stat_qq_line()+
+  labs(title = "Normality test")
 
 
 
@@ -558,7 +569,7 @@ linear and equal variance relationship in our data points. Next, we tested for
 normality using a QQ plot. This came out less fitting, but we realized there are
 only 30 data points so it is expected that the tests won't exactly fit. 
 
-### 10 Correlation - Team Average WAR and Winning Percentage
+### Correlation - Team Average WAR and Winning Percentage
 
 
 ```{r}
@@ -586,15 +597,18 @@ aug_war %>%
 ggplot(aug_war, mapping = aes(x = .fitted, y = .resid)) +
   geom_point() + 
   geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
-  labs(x = "Predicted Winning Percentage", y = "Residuals")
+  labs(title = "Equal variance and linearity test",
+       x = "Predicted Winning Percentage", y = "Residuals")
 
 ggplot(aug_war, mapping = aes(x = .resid)) +
   geom_histogram(bins = 15) + 
-  labs(x = "Residuals")
+  labs(title= "normality test",
+      x = "Residuals")
 
 ggplot(aug_war, mapping = aes(sample = .resid)) +
   stat_qq() + 
-  stat_qq_line()
+  stat_qq_line()+
+  labs(title = "normality test")
 ```
 
 Expected team winning percentage = 0.2012 + 0.3326(team average raptor)
@@ -612,7 +626,7 @@ the normality is close enough to pass the test. With only 30 datapoints, it is
 hard to tell an exact fit from these tests, so the overall linear model should
 be used with slight caution.
 
-### 11 Comparing WAR and Raptor Values
+### Comparing WAR and Raptor Values
 
 ```{r compairing War and Raptor Values}
 
@@ -641,7 +655,7 @@ is clearest when noticing that Alize Johnson, who average 6.9 minuets per game
 for only 17 games last season, has a raptor 100 points higher than league MVP 
 Giannis Antetokounmpo.
 
-### Discussion
+# 6: Discussion
 
 Before we analyzed this dataset, we assumed that defensive players were most 
 valuable to a team. However, based on our data, we have come to the conclusion 
