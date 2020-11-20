@@ -125,6 +125,18 @@ more pace in a game, the variables above were used to achieve this. For this
 method we made the assumption that the data was normally distributed.
 `pace_impact`:	Player impact on team possessions per 48 minutes
 
+Next, we used a Linear Model in order to examine the relationship between a 
+teams average raptor and a teams winning percentage. In doing so, we found the
+linear model equation in regards to winning percentage and raptor. 
+
+In the next test, we used a Linear Model to understand the relationship between 
+a teams average WAR and their winning percentage. It was a very similar test to 
+the example above, and it gave us a different equation in order to calculate 
+winning percentage.
+
+Lastly, we simply selected the top 10 players in terms of total raptor and WAR 
+and compared them to find possible similarities.
+
 
 ### Creating telling variables and cleaning data
 
@@ -217,7 +229,8 @@ ggplot(data = all_nba, aes(x=factor(1), fill=player_type))+
   geom_bar(width = 1)+
   coord_polar("y") +
   labs(title = 
-         "G2: Two-Way players have the highest representation on the All-NBA teams",
+         "G2: Two-Way players have the highest representation on the All-NBA 
+       teams",
        fill = "Player Type")+
   theme(axis.title.x=element_blank(),
         axis.ticks.x=element_blank(),
@@ -358,7 +371,7 @@ the two players types is shocking when visualized. Offensive and defensive playe
 have a very close total war value, with defensive players slightly ahead.
 
 
-### 7: Which is more effictive on WAR, offense or defense?
+### 7: Which is more effective on WAR, offense or defense?
 
 ```{r war-cor-test}
 
@@ -397,7 +410,7 @@ nba_players %>%
 
 ```
 We would love to look at the relationship between a players WAR and their
-offense and defensive raptor grades, but they are just not that connected.
+offensive and defensive raptor grades, but they are just not that connected.
 In the linear model test we conducted, the results were as follows:
 
 Expected regular season WAR = 1.02 + 0.026 * Defensive RAPTOR + 0.125 * 
@@ -559,9 +572,9 @@ team_war_data <- inner_join(team_data_war, team_win_pct_data, by = "team")
 
 ggplot(data = team_war_data, aes(x = team_win_pc, y= avg_war)) +geom_point() +
   geom_smooth(method = "lm", se = FALSE, col = "red", lyt = 2, lwd = 1) +
-  labs(title = "ADD TITLE",
-       subtitle = "ADD SUBTITLE", 
-       y= "Average WAR", x = "Team Winning Percantage")
+  labs(title = "A higher average team WAR leads to a higher winning percentage",
+       subtitle = "(For the most part)", 
+       y= "Average WAR", x = "Team Winning Percentage")
 
 lm_war <- lm(team_win_pc ~ avg_war, data = team_war_data)
 tidy(lm_war)
@@ -625,8 +638,46 @@ win above replacement, meaning that the best players would have the highest
 WAR. In contrast, the players with the highest raptors could be statistical
 anomalies, and the best players clearly do not have the highest raptors. This
 is clearest when noticing that Alize Johnson, who average 6.9 minuets per game
-for only 17 games last season, has a raptor 100 points higher than leauge MVP Giannis
-Antetokounmpo.
+for only 17 games last season, has a raptor 100 points higher than league MVP 
+Giannis Antetokounmpo.
 
 ### Discussion
-This section is a conclusion and discussion. This will require a summary of what you have learned about your research question along with statistical arguments supporting your conclusions. Also, critique your own methods and provide suggestions for improving your analysis. Issues pertaining to the reliability and validity of your data and appropriateness of the statistical analysis should also be discussed here. A paragraph on what you would do differently if you were able to start over with the project or what you would do next if you were going to continue work on the project should also be included.
+
+Before we analyzed this dataset, we assumed that defensive players were most 
+valuable to a team. However, based on our data, we have come to the conclusion 
+that offensive players are actually more important. Moreover, two way players 
+are invaluable for a team, and are key to a teams overall success. Offensive 
+raptor correlates more highly to WAR than defensive raptor. We associate WAR 
+with individual success, as it is a variable that shows a players overall 
+importance to the team in terms of wins above replacement. In addition, when 
+looking to find the more valuable players, using the WAR variable is more 
+useful, as there are statistical outliers in the raptor data that do not always 
+portray complete accuracy. We also learned a lot in our visualizations, such as 
+the importance and lack there of two way players. In addition, we learned that 
+the majority of the players in the NBA had an average raptor around zero, making 
+there a lot of average players in the NBA.  
+
+In terms of suggestions for improving our analysis, we could have made sure that 
+our correlation tests worked better. Especially in our first correlation test, 
+the QQ plots showed some non-normality, and we could have come up with better 
+conclusions if our QQ plots were more accurate. In addition, we performed a 
+T-test on a full population. Due to the fact that NBA changes every year, 
+performing a T-test on a full population could suggest accurate predictions 
+about future years. In terms of our data, most of the variables are numeric 
+based, and do not necessarily contain all of the nuances of the NBA, such as 
+coaching, team morale, synergy between teammates, and injuries.
+
+If we were to start over, we would have chosen a similar data set but one with 
+a random population of NBA players throughout history. If we had done this, we 
+would have been able to perform sample population tests. In addition, we would 
+have chosen a data set with a few simpler statistics, such as points per game, 
+rebounds per game, and assists per game, in order to analyze the change of these 
+stats over the years. The NBA has become much more an offensive league, and it 
+would have been interesting to observe that change analytically. If we were to 
+continue to work on this project, we would try to find linear models that fit 
+effectively, or we would have continued to try to make the data fit (we did not 
+fully learn how to transform complex variables).
+
+
+
+
