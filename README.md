@@ -10,4 +10,9 @@ Relevant Variables (note there are other variables in the data set we did not us
 7. war_total:	Wins Above Replacement between regular season and playoffs. Numeric variable type. Positive or negative, kept to 10 decimals.
 8. war_reg_season:	Wins Above Replacement for regular season. Numeric variable type. Positive or negative, kept to 10 decimals.
 9. war_playoffs: Wins Above Replacement for playoffs. Numeric variable type. Positive or negative, kept to 10 decimals.
-10. pace_impact: Player impact on team possessions per 48 minutes. 
+10. pace_impact: Player impact on team possessions per 48 minutes. Numeric variable type. Positive or negative, kept to 9 decimals.
+11: team: A 3-letter team indicator. Categorical type variable. It is possible for a player to have played on multiple teams through trade.
+
+We created variables 12 and 13:
+12: player_type: A player is either Defesive, Offensive, Two-way or No-way based on their raptor grades. Categorical type variable. Every player must fall into one category.
+13: team_win_pct: The player's team's win percentage at the end of the regular season. Numeric Variable type. Kept to a standard 3 decimals. 
